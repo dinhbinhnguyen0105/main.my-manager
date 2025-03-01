@@ -11,18 +11,15 @@ const createMainWindow = () => {
         width: 1200,
         height: 800,
         webPreferences: {
-            preload: "/Users/dinhbinh/Dev/electron-project/main.my-manager/src/preload.js",
-            // preload: path.resolve(__dirname, "preload.js"),
+            // preload: "/Users/dinhbinh/Dev/electron-project/main.my-manager/src/preload.js",
+            preload: path.resolve(__dirname, "preload.js"),
             contextIsolation: true,
             nodeIntegration: false,
             enableBlinkFeatures: "",
         },
     });
     window.loadURL("http://localhost:5173/");
-
-    window.webContents.on('did-fail-load', () => {
-        console.error('Unable to load preload script:', path.resolve(__dirname, "preload.js"));
-    });
+    // window.loadFile(path.resolve(__dirname, "dist", "index.html"));
 };
 
 app.whenReady().then(() => {
