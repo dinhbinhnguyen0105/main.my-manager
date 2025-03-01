@@ -1,0 +1,19 @@
+{
+    "name": "main.my-manager",
+    "version": "1.0.0",
+    "main": "./src/main.js",
+    "scripts": {
+        "start": "electron ./src/main.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "electron": "^34.1.0",
+        "puppeteer": "^24.2.0",
+        "puppeteer-extra": "^3.3.6",
+        "puppeteer-extra-plugin-stealth": "^2.11.2",
+        "user-agents": "^1.1.443",
+        "uuid": "^11.1.0"
+    }
+}

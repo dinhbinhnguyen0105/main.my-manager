@@ -1,7 +1,9 @@
 // user.js
-const uuid = require("uuid");
+// const uuid = require("uuid");
+const { v4: uuidv4 } = require('uuid');
+
 const UserAgent = require("user-agents");
-const userId = uuid.v4();
+const userId = uuidv4();
 const mobileAgent = new UserAgent({ deviceCategory: "mobile", platform: "iPhone" });
 const desktopAgent = new UserAgent({ deviceCategory: "desktop", platform: "MacIntel" });
 
