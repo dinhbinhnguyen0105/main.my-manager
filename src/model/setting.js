@@ -1,9 +1,9 @@
 //setting.js
 
-const setting = {
+const initSettingModel = () => ({
     isMobile: false,
     thread: 1,
     proxy: "",
-};
+});
 
-module.exports = setting;
+module.exports = initSettingModel;

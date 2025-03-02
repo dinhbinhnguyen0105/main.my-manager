@@ -7,11 +7,11 @@ contextBridge.exposeInMainWorld("electronAPIs", {
     createUser: (user) => ipcRenderer.invoke("/user/create", user),
     updateUser: (user) => ipcRenderer.invoke("/user/update", user),
     deleteUser: (id) => ipcRenderer.invoke("/user/delete", id),
-    launchUser: (id) => ipcRenderer.invoke("/user/launch", id),
+    launchUser: (payload) => ipcRenderer.invoke("/user/launch", payload),
 
-    getRobotConfig: () => ipcRenderer.invoke("/robot"),
-    updateRobotConfig: (robotConfig) => ipcRenderer.invoke("/robot/update", robotConfig),
-    runInteract: (user, robotConfig) => ipcRenderer.invoke("/robot/run-interact", user, robotConfig),
+    getRobotInteractConfig: () => ipcRenderer.invoke("/robot/interact"),
+    updateRobotInteractConfig: (robotInteractConfigPayload) => ipcRenderer.invoke("/robot/interact/update", robotInteractConfigPayload),
+    runRobotInteract: (userIds, robotInteractConfig) => ipcRenderer.invoke("/robot/interact/run", { userIds, robotInteractConfig }),
 
     getSetting: () => ipcRenderer.invoke("/setting"),
     updateSetting: (settings) => ipcRenderer.invoke("/setting/update", settings),

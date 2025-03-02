@@ -24,7 +24,6 @@ const handleListSetting = () => {
 };
 
 const handleUpdateSetting = (settings) => {
-    console.log("settings: ", settings);
     return new Promise((resolve, reject) => {
         try {
             const rawDB = fs.readFileSync(dbPath, { encoding: "utf8" });

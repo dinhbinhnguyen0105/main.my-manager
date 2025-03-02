@@ -1,1 +1,224 @@
-[{"info":{"id":"b966ceec-0bd2-4f60-b6fd-27727675df6b","username":"test-01","uid":"test-01","password":"test-01","twoFA":"test-01","email":"test-01","emailPassword":"test-01","phoneNumber":"test-01","group":"test-01","type":"test-01","note":"test-01","createdAt":"2025-03-01T06:33:12.780Z","updatedAt":"2025-03-01T06:33:12.780Z"},"browser":{"name":"b966ceec-0bd2-4f60-b6fd-27727675df6b","mobile":{"userAgent":"Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1","screenHeight":844,"screenWidth":390,"viewportHeight":663,"viewportWidth":390},"desktop":{"userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Safari/605.1.15","screenHeight":900,"screenWidth":1440,"viewportHeight":820,"viewportWidth":1440}},"actions":{"isSelected":false}}]
+[
+    {
+        "info": {
+            "id": "4bc7c118-ba8e-4418-8e5f-0126aca905fa",
+            "username": "Nguyen Laurie",
+            "uid": "61567711004220",
+            "password": "_HW11235813",
+            "twoFA": "",
+            "email": "",
+            "emailPassword": "",
+            "phoneNumber": "",
+            "group": "",
+            "type": "",
+            "note": "",
+            "createdAt": "2025-03-02T00:57:59.838Z",
+            "updatedAt": "2025-03-02T00:57:59.838Z"
+        },
+        "browser": {
+            "name": "4bc7c118-ba8e-4418-8e5f-0126aca905fa",
+            "mobile": {
+                "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_7_10 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) GSA/357.0.729240823 Mobile/15E148 Safari/604.1",
+                "screenHeight": 812,
+                "screenWidth": 375,
+                "viewportHeight": 622,
+                "viewportWidth": 375
+            },
+            "desktop": {
+                "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15",
+                "viewportHeight": 720,
+                "viewportWidth": 1280,
+                "screenHeight": 720,
+                "screenWidth": 1280
+            }
+        },
+        "actions": {
+            "isSelected": false
+        }
+    },
+    {
+        "info": {
+            "id": "b5b0d102-ba1a-49dd-82a3-6e9b1fb62c14",
+            "username": "Nguyen Emilee",
+            "uid": "61567855906086",
+            "password": "_HW11235813",
+            "twoFA": "",
+            "email": "",
+            "emailPassword": "",
+            "phoneNumber": "",
+            "group": "",
+            "type": "",
+            "note": "",
+            "createdAt": "2025-03-02T02:28:32.804Z",
+            "updatedAt": "2025-03-02T02:28:32.804Z"
+        },
+        "browser": {
+            "name": "b5b0d102-ba1a-49dd-82a3-6e9b1fb62c14",
+            "mobile": {
+                "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1",
+                "screenHeight": 844,
+                "screenWidth": 390,
+                "viewportHeight": 663,
+                "viewportWidth": 390
+            },
+            "desktop": {
+                "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Safari/605.1.15",
+                "screenHeight": 1180,
+                "screenWidth": 820,
+                "viewportHeight": 743,
+                "viewportWidth": 860
+            }
+        },
+        "actions": {
+            "isSelected": false
+        }
+    },
+    {
+        "info": {
+            "id": "36579d47-200a-45b1-b532-081499e02ec0",
+            "username": "Trúc Phượng",
+            "uid": "61568488563757",
+            "password": "_HW11235813",
+            "twoFA": "",
+            "email": "",
+            "emailPassword": "",
+            "phoneNumber": "",
+            "group": "",
+            "type": "",
+            "note": "",
+            "createdAt": "2025-03-02T02:47:49.515Z",
+            "updatedAt": "2025-03-02T02:47:49.515Z"
+        },
+        "browser": {
+            "name": "36579d47-200a-45b1-b532-081499e02ec0",
+            "mobile": {
+                "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+                "screenHeight": 852,
+                "screenWidth": 393,
+                "viewportHeight": 656,
+                "viewportWidth": 393
+            },
+            "desktop": {
+                "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+                "screenHeight": 900,
+                "screenWidth": 1440,
+                "viewportHeight": 715,
+                "viewportWidth": 1440
+            }
+        },
+        "actions": {
+            "isSelected": false
+        }
+    },
+    {
+        "info": {
+            "id": "3d0aa12e-376a-4866-92e7-a72a5b7562ec",
+            "username": "Zachary Scott",
+            "uid": "61571105674637",
+            "password": "Maryem$26",
+            "twoFA": "QWRTRVFP6FVRTVKZUY52EHOVWKRSPCO7",
+            "email": "dcahmg0e3l@qejjyl.com",
+            "emailPassword": "",
+            "phoneNumber": "",
+            "group": "",
+            "type": "",
+            "note": "",
+            "createdAt": "2025-03-02T02:48:48.132Z",
+            "updatedAt": "2025-03-02T02:48:48.132Z"
+        },
+        "browser": {
+            "name": "3d0aa12e-376a-4866-92e7-a72a5b7562ec",
+            "mobile": {
+                "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1",
+                "screenHeight": 693,
+                "screenWidth": 320,
+                "viewportHeight": 518,
+                "viewportWidth": 320
+            },
+            "desktop": {
+                "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+                "screenHeight": 900,
+                "screenWidth": 1440,
+                "viewportHeight": 812,
+                "viewportWidth": 1440
+            }
+        },
+        "actions": {
+            "isSelected": false
+        }
+    },
+    {
+        "info": {
+            "id": "b335ed11-2cc2-4ab2-8c7e-6e6068286159",
+            "username": "DB RE",
+            "uid": "61573027943368",
+            "password": "_HW11235813",
+            "twoFA": "",
+            "email": "",
+            "emailPassword": "",
+            "phoneNumber": "",
+            "group": "",
+            "type": "",
+            "note": "",
+            "createdAt": "2025-03-02T02:49:04.833Z",
+            "updatedAt": "2025-03-02T02:49:04.833Z"
+        },
+        "browser": {
+            "name": "b335ed11-2cc2-4ab2-8c7e-6e6068286159",
+            "mobile": {
+                "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6.1 Mobile/15E148 Safari/604.1",
+                "screenHeight": 896,
+                "screenWidth": 414,
+                "viewportHeight": 715,
+                "viewportWidth": 414
+            },
+            "desktop": {
+                "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15",
+                "screenHeight": 982,
+                "screenWidth": 1512,
+                "viewportHeight": 796,
+                "viewportWidth": 1505
+            }
+        },
+        "actions": {
+            "isSelected": false
+        }
+    },
+    {
+        "info": {
+            "id": "813e40ed-a1b8-4fad-b839-9a1a0a66a569",
+            "username": "DinhBinh Nguyen",
+            "uid": "61555539501348",
+            "password": "_HW11235813",
+            "twoFA": "",
+            "email": "",
+            "emailPassword": "",
+            "phoneNumber": "",
+            "group": "",
+            "type": "",
+            "note": "",
+            "createdAt": "2025-03-02T07:09:38.687Z",
+            "updatedAt": "2025-03-02T07:09:38.687Z"
+        },
+        "browser": {
+            "name": "813e40ed-a1b8-4fad-b839-9a1a0a66a569",
+            "mobile": {
+                "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.3 Mobile/15E148 Safari/604.1",
+                "screenHeight": 844,
+                "screenWidth": 390,
+                "viewportHeight": 663,
+                "viewportWidth": 390
+            },
+            "desktop": {
+                "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.1.1 Safari/605.1.15",
+                "screenHeight": 1080,
+                "screenWidth": 810,
+                "viewportHeight": 707,
+                "viewportWidth": 1280
+            }
+        },
+        "actions": {
+            "isSelected": false
+        }
+    }
+]

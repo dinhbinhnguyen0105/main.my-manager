@@ -38,9 +38,9 @@ const userRoutes = () => {
                 .catch(err => reject(err));
         });
     });
-    ipcMain.handle("/user/launch", (res, id) => {
+    ipcMain.handle("/user/launch", (res, payload) => {
         return new Promise((resolve, reject) => {
-            userControllers.launchUser(id)
+            userControllers.launchUser(payload)
                 .then(res => resolve(res))
                 .catch(err => reject(err));
         });

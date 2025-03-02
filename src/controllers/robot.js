@@ -1,12 +1,12 @@
 // robot.js
 const robotServices = require("../services/robot");
 
-const getRobotConfig = () => robotServices.handleGetRobotConfig();
-const updateRobotConfig = (robotConfig) => robotServices.handleUpdateRobotConfig(robotConfig);
-const runInteract = (user, robotConfig) => robotServices.handleRunInteract(user, robotConfig);
+const getRobotInteractConfig = () => robotServices.handleGetRobotInteractConfig();
+const updateRobotInteractConfig = (robotInteractConfigPayload) => robotServices.handleUpdateRobotInteractConfig(robotInteractConfigPayload);
+const runRobotInteract = (user, robotInteractConfigPayload) => robotServices.handleRunRobotInteract(user, robotInteractConfigPayload);
 
 module.exports = {
-    getRobotConfig,
-    updateRobotConfig,
-    runInteract,
+    getRobotInteractConfig,
+    updateRobotInteractConfig,
+    runRobotInteract,
 }
