@@ -3,7 +3,6 @@ const readConfigs = require("./readConfig");
 const browsersPath = path.resolve(__dirname, "..", "..", "browsers");
 
 const prepareOptionPuppeteer = async (isMobile, userInfo, proxy) => {
-
     const userAgentOptions = isMobile ? userInfo.browser.mobile : userInfo.browser.desktop;
     const browserOptions = {
         isMobile: isMobile,
