@@ -10,9 +10,9 @@ class FacebookController extends Controller {
         this.SELECTOR = {
             button: "div[role='button']",
             feeds_all: "a[href='https://www.facebook.com/?filter=all&sk=h_chr']",
-            feeds_friend: "a[href='https://www.facebook.com/?filter=friends&sk=h_chr']",
-            feeds_group: "a[href='https://www.facebook.com/?filter=groups&sk=h_chr']",
-            feeds_page: "a[href='https://www.facebook.com/?filter=groups&sk=h_chr']",
+            feeds_friend: "a[href='/?filter=friends&sk=h_chr']",
+            feeds_group: "a[href='/?filter=groups&sk=h_chr']",
+            feeds_page: "a[href='/?filter=groups&sk=h_chr']",
         };
     }
     async checkLogin() {
@@ -72,7 +72,8 @@ class FacebookController extends Controller {
             console.error(err);
             return false;
         };
-    }
+    };
+
 }
 
 module.exports = FacebookController;

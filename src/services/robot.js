@@ -84,20 +84,11 @@ const handleRunRobotInteract = (userIds, robotInteractConfigPayload) => {
                         await fbInteract.controller();
                     };
                 };
-                resolve({
-                    statusCode: 200,
-                    message: "success",
-                })
-
-                // try {
-
-                //     // optionsData = await prepareOptionPuppeteer(setting.isMobile, user, "171.236.167.14:36254:XQrxWn:PeGKEE");
-                // } catch (err) {
-                //     // handle
-                //     console.error(err.data);
-                //     // break;
-                // }
             };
+            resolve({
+                statusCode: 200,
+                message: "success",
+            });
             console.log("Finished")
         } catch (err) {
             reject({
