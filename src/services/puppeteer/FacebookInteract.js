@@ -5,8 +5,8 @@ class FacebookInteract extends FacebookController {
     constructor(options, interactOptions) {
         super(options);
         this.likeAndComment = interactOptions.likeAndComment;
+        console.log(options);
     };
-
     async controller() {
         await this.initBrowser();
         if (!await this.checkLogin()) { return false; }
@@ -27,24 +27,31 @@ class FacebookInteract extends FacebookController {
                 };
                 await this.delay();
                 await this.clickToElement(feedsElm);
+                return true;
             } catch (err) {
                 console.error(err);
                 return false;
             };
         };
         const handleClickFeedsFriendElm = async () => {
-            await this.page.waitForSelector(this.SELECTOR.feeds_friend, { timeout: 60000 });
-            const feedsFriend = await this.page.$(this.SELECTOR.feeds_friend);
-            if (!await this.isElementInteractable(feedsFriend)) {
-                if (await this.handleCloseVisibleDialog()) { return handleClickFeedsAllElm(); }
-                else {
-                    console.error("!await this.isElementInteractable(feedsFriend)");
-                    return false;
+            try {
+                await this.page.waitForSelector(this.SELECTOR.feeds_friend, { timeout: 60000 });
+                const feedsFriend = await this.page.$(this.SELECTOR.feeds_friend);
+                if (!await this.isElementInteractable(feedsFriend)) {
+                    if (await this.handleCloseVisibleDialog()) { return handleClickFeedsFriendElm(); }
+                    else {
+                        console.error("!await this.isElementInteractable(feedsFriend)");
+                        return false;
+                    };
                 };
+                await this.delay();
+                await this.clickToElement(feedsFriend);
+                return true;
+            } catch (err) {
+                console.error(err);
+                return false;
             };
-            await this.delay();
-            await this.clickToElement(feedsFriend);
-        }
+        };
 
         const friendConfigs = this.likeAndComment.friend;
         if (!friendConfigs.isSelected) { return true; };
@@ -52,8 +59,11 @@ class FacebookInteract extends FacebookController {
             await this.page.goto("https://www.facebook.com/");
         };
         try {
-            if (!await handleClickFeedsAllElm()) { return false; };
-            if (!await handleClickFeedsFriendElm()) { return false; };
+            // if (!await handleClickFeedsAllElm()) { await this.page.goto("https://www.facebook.com/?filter=all&sk=h_chr"); };
+            // if (!await handleClickFeedsFriendElm()) { await this.page.goto("https://www.facebook.com/?filter=friends&sk=h_chr"); };
+            await this.page.goto("https://www.facebook.com/?filter=friends&sk=h_chr");
+            await this.handleInteractFeeds(300000, ["like", "love", "like", "like"], ["❤️❤️❤️", "♥️♥️♥️"]);
+            console.log("Finished");
 
         } catch (err) {
             console.error(err);

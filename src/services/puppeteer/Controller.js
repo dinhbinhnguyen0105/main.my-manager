@@ -66,7 +66,7 @@ class Controller {
         return this.browser;
     };
 
-    async #__randomBezierCurve() {
+    async _randomBezierCurve() {
         const p1 = [Math.random() * 0.4, Math.random() * 0.4]; // Control point 1
         const p2 = [Math.random() * 0.6 + 0.4, Math.random() * 0.6 + 0.4]; // Control point 2
         return (t) => {
@@ -135,7 +135,7 @@ class Controller {
                 };
 
                 // Delay không đều, giúp tránh bị phát hiện là bot
-                let delay = Math.floor(Math.random() * 1200) + 300; // 300ms - 1500ms
+                let delay = Math.floor(Math.random() * 500) + 300; // 300ms - 1500ms
                 if (Math.random() < 0.2) delay += 500; // 20% cơ hội delay lâu hơn (tạo sự tự nhiên)
                 await new Promise(resolve => setTimeout(resolve, delay));
 
@@ -145,11 +145,11 @@ class Controller {
             };
 
             // Cuộn dư một chút rồi quay lại để trông tự nhiên hơn
-            if (overscroll > 0) {
-                await this.page.mouse.wheel({ deltaY: overscroll });
-                await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 1000) + 500));
-                await this.page.mouse.wheel({ deltaY: -overscroll });
-            };
+            // if (overscroll > 0) {
+            //     await this.page.mouse.wheel({ deltaY: overscroll });
+            //     await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 500) + 500));
+            //     await this.page.mouse.wheel({ deltaY: -overscroll });
+            // };
             return true;
         } catch (err) {
             console.error(err);
@@ -268,15 +268,10 @@ class Controller {
             if (!boundingBox) return false;
 
             // Tạo độ lệch ngẫu nhiên dựa trên kích thước phần tử
-            const offsetX = (Math.random() - 0.5) * boundingBox.width * 0.15;
-            const offsetY = (Math.random() - 0.5) * boundingBox.height * 0.15;
-            const x = boundingBox.x + boundingBox.width / 2 + offsetX;
-            const y = boundingBox.y + boundingBox.height / 2 + offsetY;
-
-            // Chỉ cài đặt MouseHelper nếu đang debug
-            if (process.env.DEBUG_MODE) {
-                await installMouseHelper(this.page);
-            }
+            const offsetX = (Math.random() - 0.5) * boundingBox.width * 0.05;
+            const offsetY = (Math.random() - 0.5) * boundingBox.height * 0.05;
+            const x = Math.max(boundingBox.x, Math.min(boundingBox.x + boundingBox.width, boundingBox.x + boundingBox.width / 2 + offsetX));
+            const y = Math.max(boundingBox.y, Math.min(boundingBox.y + boundingBox.height, boundingBox.y + boundingBox.height / 2 + offsetY));
 
             await this.#moveMouse(x, y);
             return true;
