@@ -1,7 +1,9 @@
-const path = require("path");
-const Controller = require("./Controller");
+// newFacebook.js
 
-class FacebookController extends Controller {
+const path = require("path");
+const Controller = require(".new/Controller");
+
+class Facebook extends Controller {
     constructor(options) {
         super(options);
         this.pageLanguage = null;
@@ -19,7 +21,8 @@ class FacebookController extends Controller {
             textbox: "div[role='textbox']",
         };
         this.REACTIONS = [];
-    }
+    };
+
     async checkLogin() {
         try {
             const uid = path.basename(this.puppeteerOptions.userDataDir);
@@ -35,10 +38,9 @@ class FacebookController extends Controller {
                 if (this.pageLanguage.trim() !== "vi" && this.pageLanguage.trim() !== "en") {
                     console.error("Please switch the language to English or Vietnamese");
                     return false;
-                }
+                };
                 return true;
-            }
-            else {
+            } else {
                 console.error(`User is not logged into Facebook in userDataDir: [${uid}]`)
                 return false;
             };
@@ -79,30 +81,6 @@ class FacebookController extends Controller {
         };
     };
 
-    async handleHover(element) {
-        try {
-            const box = await element.boundingBox();
-            if (!box) {
-                console.error("Element not found or not visible");
-                return false;
-            }
-
-            const startX = Math.floor(Math.random() * box.width) + box.x;
-            const startY = Math.floor(Math.random() * box.height) + box.y;
-            const endX = box.x + box.width / 2;
-            const endY = box.y + box.height / 2;
-
-            await this.page.mouse.move(startX, startY);
-            await this.page.mouse.move(endX, endY, { steps: 20 });
-
-            await element.hover();
-            return true;
-        } catch (err) {
-            console.error("Error in handleHover:", err);
-            return false;
-        }
-    }
-
     async getReactionsDialog(timeWait = 0) {
         this.ARIA_LABEL.reactions = this.pageLanguage === "vi" ? "cảm xúc" : "reactions";
         try {
@@ -122,7 +100,7 @@ class FacebookController extends Controller {
         };
     };
 
-    async handleInteractLike(articleElm, reaction) {
+    async interactingLike(articleElm, reaction) {
         // aria-label="Thích"
         this.ARIA_LABEL.button_like = this.pageLanguage === "vi" ? "thích" : "like";
         this.REACTIONS = this.pageLanguage === "vi" ? ["thích", "yêu thích", "thương thương", "haha", "wow", "buồn", "phẫn nộ"] : ["like", "love", "care", "haha", "wow", "sad", "angry",];
@@ -137,7 +115,7 @@ class FacebookController extends Controller {
                 }, this.ARIA_LABEL.button_like);
                 if (isLikeBtn) {
                     await this.moveToElement(buttonElm);
-                    await this.handleHover(buttonElm);
+                    // await this.hoverToElement(buttonElm);
                     const reactionsDialog = await this.getReactionsDialog();
                     if (typeof reaction === "string") {
                         const buttonIndex = this.REACTIONS.findIndex(r => r.toLowerCase() === reaction.toLowerCase());
@@ -150,94 +128,14 @@ class FacebookController extends Controller {
                             return true;
                         } else {
                             return false;
-                        }
-                    }
+                        };
+                    };
                     return false;
-                }
+                };
             };
         } catch (err) {
             console.error("ERROR in handleInteractLike: ", err);
             return false;
         };
     };
-
-    async handleInteractComment(articleElm, comment) {
-        this.ARIA_LABEL.button_comment = this.pageLanguage === "vi" ? "viết bình luận" : "Leave a comment";
-        try {
-            await articleElm.waitForSelector(this.SELECTOR.button, { timeout: 60000 });
-            const buttons = await articleElm.$$(this.SELECTOR.button);
-            for (let button of buttons) {
-                const isComment = await button.evaluate((elm, ariaLabel) => {
-                    const label = elm.getAttribute("aria-label");
-                    if (label && label.toLowerCase() === ariaLabel.toLowerCase()) return true;
-                    return false;
-                }, this.ARIA_LABEL.button_comment);
-                if (isComment) {
-                    await this.clickToElement(button);
-                    await this.page.waitForSelector(this.SELECTOR.textbox);
-                    const textBox = await this.page.$(this.SELECTOR.textbox);
-                    await this.typeToElement(textBox, comment);
-                    console.log("Type: ", comment);
-                    await new Promise((resolve) => setTimeout(resolve, 60000));
-                    return true;
-                };
-            };
-        } catch (err) {
-            console.log("handlerInteractComment: ", err);
-            return false;
-        };
-    }
-
-    async handleInteractFeeds(duration = 30000, reactions, comments) {
-        try {
-            this.ARIA_LABEL.feeds_container = this.pageLanguage === "vi" ? "bảng feed" : "feeds";
-            await this.page.waitForSelector(this.SELECTOR.main_container, { timeout: 60000 });
-            const mainContainers = await this.page.$$(this.SELECTOR.main_container);
-            for (let mainContainer of mainContainers) {
-                const isFeeds = await mainContainer.evaluate((elm, ariaLabel) => {
-                    const label = elm.getAttribute("aria-label");
-                    if (label && label.toLowerCase().includes(ariaLabel.toLowerCase())) return true;
-                    return false;
-                }, this.ARIA_LABEL.feeds_container);
-                if (isFeeds) {
-                    const startTime = Date.now();
-                    let count = 0;
-                    while (Date.now() - startTime < duration) {
-                        await mainContainer.waitForSelector(this.SELECTOR.feed_article);
-                        const articles = await mainContainer.$$(this.SELECTOR.feed_article);
-                        if (articles.length > 0) {
-                            if (count < articles.length) {
-                                await this.page.evaluate(async (element) => {
-                                    const rect = element.getBoundingClientRect();
-                                    const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-                                    if (!isVisible) {
-                                        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                        await new Promise(resolve => setTimeout(resolve, Math.random() * 500 + 2000)); // Nghỉ ngẫu nhiên từ 500ms đến 1000ms
-                                    }
-                                }, articles[count]);
-                                console.log("count: ", count);
-                                count += 1;
-                                if (Math.random() < 0.5) {
-                                    if (reactions.length > 0) {
-                                        // await this.handleInteractLike(articles[count], reactions.pop());
-                                    }
-                                    if (comments.length > 0) {
-                                        await this.handleInteractComment(articles[count], comments.pop())
-                                    }
-                                }
-                            }
-                        }
-                    };
-                    return true;
-                };
-            }
-
-            return false;
-        } catch (err) {
-            console.error(err);
-            return false;
-        }
-    }
 }
-
-module.exports = FacebookController;

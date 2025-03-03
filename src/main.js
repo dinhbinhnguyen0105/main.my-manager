@@ -11,15 +11,14 @@ const createMainWindow = () => {
         width: 1200,
         height: 800,
         webPreferences: {
-            // preload: "/Users/dinhbinh/Dev/electron-project/main.my-manager/src/preload.js",
             preload: path.resolve(__dirname, "preload.js"),
             contextIsolation: true,
             nodeIntegration: false,
             enableBlinkFeatures: "",
         },
     });
-    window.loadURL("http://localhost:5173/");
-    // window.loadFile(path.resolve(__dirname, "dist", "index.html"));
+    // window.loadURL("http://localhost:5173/");
+    window.loadFile(path.resolve(__dirname, "dist", "index.html"));
 };
 
 app.whenReady().then(() => {

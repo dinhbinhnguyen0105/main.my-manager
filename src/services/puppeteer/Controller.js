@@ -66,7 +66,7 @@ class Controller {
         return this.browser;
     };
 
-    async _randomBezierCurve() {
+    randomBezierCurve() {
         const p1 = [Math.random() * 0.4, Math.random() * 0.4]; // Control point 1
         const p2 = [Math.random() * 0.6 + 0.4, Math.random() * 0.6 + 0.4]; // Control point 2
         return (t) => {
@@ -77,7 +77,7 @@ class Controller {
                 t * t * p2[1]
             );
         };
-    }
+    };
 
     async #moveMouse(x, y) {
         const { startX, startY } = await this.page.evaluate(() => ({
@@ -85,8 +85,8 @@ class Controller {
             startY: window.pageYOffset
         }));
 
-        const steps = Math.floor(Math.random() * 15) + 25; // 25-40 bước
-        const bezierCurve = randomBezierCurve();
+        const steps = Math.floor(Math.random() * 15) + 25; // 25-40 steps
+        const bezierCurve = this.randomBezierCurve().bind(this);
 
         for (let i = 0; i <= steps; i++) {
             const progress = bezierCurve(i / steps);
@@ -95,7 +95,7 @@ class Controller {
 
             await this.page.mouse.move(currentX, currentY);
 
-            // Nghỉ từ 20-50ms dựa vào khoảng cách di chuyển
+            // Delay between 20-50ms based on the distance moved
             const delay = Math.random() * 30 + 20;
             await new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -378,18 +378,6 @@ class Controller {
     };
 };
 
-function randomBezierCurve() {
-    const p1 = [Math.random() * 0.4, Math.random() * 0.4]; // Control point 1
-    const p2 = [Math.random() * 0.6 + 0.4, Math.random() * 0.6 + 0.4]; // Control point 2
-    return (t) => {
-        const u = 1 - t;
-        return (
-            u * u * 0 + // P0 = (0,0)
-            2 * u * t * p1[1] +
-            t * t * p2[1]
-        );
-    };
-}
 module.exports = Controller;
 
 // https://www.facebook.com/?filter=all&sk=h_chr
