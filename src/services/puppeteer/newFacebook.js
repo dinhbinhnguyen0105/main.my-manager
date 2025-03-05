@@ -1,7 +1,7 @@
 // newFacebook.js
 
 const path = require("path");
-const Controller = require(".new/Controller");
+const Controller = require("./newController");
 
 class Facebook extends Controller {
     constructor(options) {
@@ -58,7 +58,7 @@ class Facebook extends Controller {
             const dialogs = await this.page.$$("div[role='dialog']");
             for (let dialog of dialogs) {
                 if (!await this.isElementInteractable(dialog)) { continue; };
-                await this.delay(2000, 5000);
+                await new Promise(resolve => setTimeout(resolve, Math.floor(Math.random() * 1000 + 3000)));
                 await this.page.waitForSelector(this.SELECTOR.button);
                 const buttons = await this.page.$$(this.SELECTOR.button);
                 for (let button of buttons) {
@@ -68,8 +68,7 @@ class Facebook extends Controller {
                         return false;
                     }, this.ARIA_LABEL.close);
                     if (isCloseBtn) {
-                        await this.delay();
-                        await this.clickToElement(button);
+                        await button.click();
                         return true;
                     };
                 };
@@ -100,7 +99,7 @@ class Facebook extends Controller {
         };
     };
 
-    async interactingLike(articleElm, reaction) {
+    async handleInteractLike(articleElm, reaction) {
         // aria-label="Thích"
         this.ARIA_LABEL.button_like = this.pageLanguage === "vi" ? "thích" : "like";
         this.REACTIONS = this.pageLanguage === "vi" ? ["thích", "yêu thích", "thương thương", "haha", "wow", "buồn", "phẫn nộ"] : ["like", "love", "care", "haha", "wow", "sad", "angry",];
@@ -114,16 +113,18 @@ class Facebook extends Controller {
                     return false;
                 }, this.ARIA_LABEL.button_like);
                 if (isLikeBtn) {
-                    await this.moveToElement(buttonElm);
-                    // await this.hoverToElement(buttonElm);
+                    this.delay(500, 1000);
+                    await buttonElm.hover();
                     const reactionsDialog = await this.getReactionsDialog();
                     if (typeof reaction === "string") {
                         const buttonIndex = this.REACTIONS.findIndex(r => r.toLowerCase() === reaction.toLowerCase());
                         await reactionsDialog.waitForSelector(this.SELECTOR.button);
-                        const buttons = await reactionsDialog.$$((this.SELECTOR.button));
-                        if (buttonIndex < buttons.length) {
-                            await new Promise(resolve => setTimeout(resolve, Math.random() * 200 + 800));
-                            await buttons[buttonIndex].click();
+                        const _buttons = await reactionsDialog.$$((this.SELECTOR.button));
+                        if (buttonIndex < _buttons.length) {
+                            this.delay(200, 1000);
+                            // await _buttons[buttonIndex].hover();
+                            await _buttons[buttonIndex].click();
+                            this.delay(200, 1000);
                             console.log(`Clicked [${reaction}]`);
                             return true;
                         } else {
@@ -138,4 +139,77 @@ class Facebook extends Controller {
             return false;
         };
     };
+
+    async handleInteractComment(articleElm, comment) {
+        this.ARIA_LABEL.button_comment = this.pageLanguage === "vi" ? "viết bình luận" : "Leave a comment";
+        try {
+            await articleElm.waitForSelector(this.SELECTOR.button, { timeout: 60000 });
+            const buttons = await articleElm.$$(this.SELECTOR.button);
+            for (let button of buttons) {
+                const isComment = await button.evaluate((elm, ariaLabel) => {
+                    const label = elm.getAttribute("aria-label");
+                    if (label && label.toLowerCase() === ariaLabel.toLowerCase()) return true;
+                    return false;
+                }, this.ARIA_LABEL.button_comment);
+                if (isComment) {
+                    await button.click();
+                    await this.delay(500, 2000);
+                    await this.handleCloseVisibleDialog();
+                    await this.page.waitForSelector(this.SELECTOR.textbox);
+                    const textBox = await this.page.$(this.SELECTOR.textbox);
+                    await this.typeToElement(textBox, comment);
+                    await this.delay(500, 2000);
+                    return true;
+                };
+            };
+        } catch (err) {
+            console.error("handleInteractComment: ", err);
+            return false;
+        };
+    };
+
+    async handleFeeds(duration = 300000, reactions, comments) {
+        try {
+            this.ARIA_LABEL.feeds_container = this.pageLanguage === "vi" ? "bảng feed" : "feeds";
+            await this.page.waitForSelector(this.SELECTOR.main_container, { timeout: 60000 });
+            const mainContainers = await this.page.$$(this.SELECTOR.main_container);
+            for (let mainContainer of mainContainers) {
+                const isFeeds = await mainContainer.evaluate((elm, ariaLabel) => {
+                    const label = elm.getAttribute("aria-label");
+                    if (label && label.toLowerCase().includes(ariaLabel.toLowerCase())) return true;
+                    return false;
+                }, this.ARIA_LABEL.feeds_container);
+                if (isFeeds) {
+                    const startTime = Date.now();
+                    let count = 0;
+                    while (Date.now() - startTime < duration) {
+                        await mainContainer.waitForSelector(this.SELECTOR.feed_article);
+                        const articles = await mainContainer.$$(this.SELECTOR.feed_article);
+                        if (articles.length > 0) {
+                            if (count < articles.length) {
+                                await this.scrollToElement(articles[count]);
+                                await this.delay(1000, 3000);
+                                if (Math.random() < 0.2) {
+                                    if (reactions.length > 0) {
+                                        await this.handleInteractLike(articles[count], reactions.pop());
+                                    }
+                                    if (comments.length > 0) {
+                                        await this.handleInteractComment(articles[count], count.toString());
+                                    }
+                                }
+                                count += 1;
+                            };
+                        };
+                    };
+                };
+            };
+            return true;
+        } catch (err) {
+            console.error(err);
+            return false;
+        }
+    }
+
 }
+
+module.exports = Facebook;

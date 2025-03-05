@@ -1,4 +1,4 @@
-const FacebookInteract = require("./FacebookInteract");
+const FacebookInteract = require("./newFacebookInteract");
 
 const optionsData = {
     puppeteerOptions: {
@@ -23,20 +23,20 @@ const jsonString = JSON.stringify({
             "isSelected": true,
             "isOnline": false,
             "like": {
-                "isSelected": false,
-                "value": []
+                "isSelected": true,
+                "value": ["like", "like", "love"]
             },
             "comment": {
-                "isSelected": false,
-                "value": []
+                "isSelected": true,
+                "value": ["♥️♥️♥️", "❤️❤️❤️"]
             },
             "poke": {
-                "isSelected": false,
-                "value": 0
+                "isSelected": true,
+                "value": 2
             },
             "rePoke": {
-                "isSelected": false,
-                "value": 0
+                "isSelected": true,
+                "value": 2
             }
         },
         "newsFeed": {
