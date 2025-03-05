@@ -1,7 +1,7 @@
 // newFacebook.js
 
 const path = require("path");
-const Controller = require("./newController");
+const Controller = require("./Controller");
 
 class Facebook extends Controller {
     constructor(options) {

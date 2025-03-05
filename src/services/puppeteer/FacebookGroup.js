@@ -1,5 +1,5 @@
 const path = require("path");
-const FacebookController = require("./newFacebook");
+const FacebookController = require("./Facebook");
 
 class FacebookGroup extends FacebookController {
     constructor(options, groupOptions) {
@@ -14,7 +14,6 @@ class FacebookGroup extends FacebookController {
     };
     async postGroup() {
         await this.page.goto(`https://www.facebook.com/groups/${this.postGroupOptions.groupId}`);
-        this.SELECTOR.tablist = 'div[aria-orientation="horizontal"][role="tablist"]';
 
         const pageLanguage = await this.page.evaluate(() => {
             return document.documentElement.lang;
@@ -24,6 +23,9 @@ class FacebookGroup extends FacebookController {
             console.error("Please switch the language to English or Vietnamese");
             return false;
         };
+
+        this.SELECTOR.tablist = 'div[aria-orientation="horizontal"][role="tablist"]';
+        this.ARIA_LABEL.create_listing_dialog = this.pageLanguage === "vi" ? "tạo bài niêm yết mới" : "create new listing";
 
         try {
             await this.page.waitForSelector(this.SELECTOR.main_container);
@@ -40,39 +42,57 @@ class FacebookGroup extends FacebookController {
                 console.log("marketplace: ", this.page.url());
                 this.ARIA_LABEL.timeline = this.pageLanguage === "vi" ? "dòng thời gian" : "timeline";
                 const waitForTimeLine = async (count = 0) => {
-                    const linkElms = await mainElm.$$("a");
-                    for (let linkElm of linkElms) {
-                        const label = await linkElm.evaluate(elm => elm.getAttribute("aria-label"));
-                        if (label && label.toLowerCase().includes(this.ARIA_LABEL.timeline)) { return linkElm; };
+                    try {
+                        const linkElms = await mainElm.$$("a");
+                        for (let linkElm of linkElms) {
+                            const label = await linkElm.evaluate(elm => elm.getAttribute("aria-label"));
+                            if (label && label.toLowerCase().includes(this.ARIA_LABEL.timeline)) { return linkElm; };
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        if (count > 30) { return false; }
+                        else { return await waitForTimeLine(count + 1); };
+                    } catch (error) {
+                        console.error(error);
+                        return false;
                     }
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    if (count > 30) { return false; }
-                    else { return waitForTimeLine(count + 1); };
                 };
 
-                const timelineElm = await waitForTimeLine();
-                const clickSellSomething = async (count = 0) => {
+                const waitForCreateListingDialog = async (count = 0) => {
                     try {
-                        const block1Handle = await timelineElm.evaluateHandle(elm => elm.closest('.html-div'));
-                        const openDialogBtnElm = await block1Handle.$(this.SELECTOR.button);
+                        const dialogs = await this.page.$$(this.SELECTOR.dialog);
+                        for (let dialog of dialogs) {
+                            const label = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
+                            if (label && label.toLowerCase().includes(this.ARIA_LABEL.create_listing_dialog)) { return dialog; };
+                        };
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        if (count > 30) { return false; }
+                        else { return await waitForCreateListingDialog(count + 1); };
                     } catch (error) {
-                        if (
-                            error.message.includes('Node is either not visible or not an HTMLElement') ||
-                            error.message.includes('Element is not attached to the DOM')
-                        ) {
-                            console.error('Element not found or not visible:', error);
+                        console.error(error);
+                        return false;
+                    };
+                };
 
+                const waitForButtonInCreateListingDialog = async (dialog, buttonCount = 2, count = 0) => {
+                    try {
+                        const buttons = await dialog.$$(this.SELECTOR.button);
+                        if (buttons.length < 2) {
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            return await waitForButtonInCreateListingDialog(dialog, buttonCount, count + 1);
                         } else {
-                            console.error('Error clicking element:', error);
-                            // Xử lý các lỗi khác
+                            return
                         }
+                    } catch (error) {
+                        console.error(error);
+                        return false;
                     }
                 }
-                // aria-label="Tạo bài niêm yết mới" && role="dialog"   aria-label="Create new listing"
 
-                this.ARIA_LABEL.create_new_dialog = this.pageLanguage === "vi" ? "tạo bài niêm yết mới" : "create new listing";
-
-
+                const timelineElm = await waitForTimeLine();
+                const block1Handle = await timelineElm.evaluateHandle(elm => elm.closest('.html-div'));
+                const openDialogBtnElm = await block1Handle.$(this.SELECTOR.button);
+                await openDialogBtnElm.click();
+                const createListingDialog = await waitForCreateListingDialog();
 
 
 
@@ -104,19 +124,22 @@ class FacebookGroup extends FacebookController {
 
 
 
-    async waitForElement(containerEH, count = 0) {
-        await containerEH.waitForSelector("a");
-        const linkElms = await containerEH.$$("a");
-        const profileUrlElm = await containerEH.evaluate((elms, label) => [...elms].find(elm => elm.getAttribute("aria-label").toLowerCase().includes(label.toLowerCase())), linkElms, this.ARIA_LABEL.profile_url);
-        if (profileUrlElm) return profileUrlElm;
-        if (!profileUrlElm) {
-            if (count <= 30) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                return await this.waitForElement(containerEH, count + 1);
-            } else {
+    async handleClickElement(callback, count = 0) {
+        // callback = elm.click()
+        try {
+            callback();
+        } catch (error) {
+            if (
+                error.message.includes('Node is either not visible or not an HTMLElement') ||
+                error.message.includes('Element is not attached to the DOM')
+            ) {
+                console.error('Element not found or not visible:', error);
                 return false;
-            };
-        };
+            } else {
+                console.error('Error clicking element:', error);
+
+            }
+        }
     };
 }
 
