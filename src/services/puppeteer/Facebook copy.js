@@ -106,7 +106,6 @@ class Facebook extends Controller {
     async handleLeavePageDialog() {
         this.ARIA_LABEL.dialog__leave__page = this.pageLanguage === "vi" ? "rời khỏi trang?" : "leave page?";
         this.ARIA_LABEL.dialog__leave__page__leaveBtn = this.pageLanguage === "vi" ? "rời khỏi trang" : "leave page";
-        // aria-label="Rời khỏi Trang"
         this.ARIA_LABEL.close_button = this.pageLanguage === "vi" ? "đóng" : "close";
         try {
             // await this.page.waitForSelector(this.SELECTOR.dialog);
@@ -298,3 +297,32 @@ class Facebook extends Controller {
 }
 
 module.exports = Facebook;
+
+
+// this.ARIA_LABEL.button__close = this.pageLanguage === "vi" ? "đóng" : "close";
+// this.ARIA_LABEL.dialog__leave__page = this.pageLanguage === "vi" ? "rời khỏi trang?" : "leave page?";
+// this.ARIA_LABEL.dialog__leave__page__leaveBtn = this.pageLanguage === "vi" ? "rời khỏi trang" : "leave page";
+
+// this.ARIA_LABEL.dialog__reactions = this.pageLanguage === "vi" ? "cảm xúc" : "reactions";
+
+// this.ARIA_LABEL.button__like = this.pageLanguage === "vi" ? "thích" : "like";
+// this.ARIA_LABEL.button__comment = this.pageLanguage === "vi" ? "viết bình luận" : "Leave a comment";
+// this.ARIA_LABEL.button__submit_comment = this.pageLanguage === "vi" ? "bình luận" : "comment";
+// this.ARIA_LABEL.feeds_container = this.pageLanguage === "vi" ? "bảng feed" : "feeds";
+// this.ARIA_LABEL.group__post__openDialogButton = this.pageLanguage === "vi" ? "dòng thời gian" : "timeline";
+// this.ARIA_LABEL.group__post__openDialogButton = this.pageLanguage === "vi" ? "trang cá nhân" : "profile";
+// this.ARIA_LABEL.group__post__dialogName = this.pageLanguage === "vi" ? "tạo bài niêm yết mới" : "create new listing";
+// this.ARIA_LABEL.next__button = this.pageLanguage === "vi" ? "tiếp" : "create new listing";
+// this.ARIA_LABEL.post_button = this.pageLanguage === "vi" ? "đăng" : "post";
+// this.ARIA_LABEL.group__post__dialogName = this.pageLanguage === "vi" ? "tạo bài viết" : "create post";
+// this.ARIA_LABEL.pokes = this.pageLanguage === "vi" ? "chọc" : "poke";
+// this.ARIA_LABEL.pokes = this.pageLanguage === "vi" ? "chọc" : "poke";
+// this.ARIA_LABEL.re_pokes = this.pageLanguage === "vi" ? "chọc lại" : "poke back";
+// this.ARIA_LABEL.video_play = this.pageLanguage === "vi" ? "phát" : "play";
+// this.ARIA_LABEL.video_pause = this.pageLanguage === "vi" ? "tạm dừng" : "pause";
+// this.ARIA_LABEL.button_comment = this.pageLanguage === "vi" ? "viết bình luận" : "Leave a comment";
+// this.ARIA_LABEL.video_viewer = this.pageLanguage === "vi" ? "trình xem video" : "video viewer";
+// this.ARIA_LABEL.submit_comment = this.pageLanguage === "vi" ? "bình luận" : "comment";
+// this.ARIA_LABEL.close_button = this.pageLanguage === "vi" ? "đóng" : "close";
+// this.ARIA_LABEL.profile__setting = this.pageLanguage === "vi" ? "xem thêm tùy chọn trong phần cài đặt trang cá nhân" : "profile settings see more options";
+// this.ARIA_LABEL.dialog__invite__friend = this.pageLanguage === "vi" ? "mời bạn bè" : "invite friends";

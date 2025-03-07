@@ -1,4 +1,4 @@
-const FacebookInteract = require("./newFacebookInteract");
+const FacebookInteract = require("./FacebookInteract");
 
 const optionsData = {
     puppeteerOptions: {
@@ -20,7 +20,7 @@ const jsonString = JSON.stringify({
     "likeAndComment": {
         "isSelected": true,
         "friend": {
-            "isSelected": true,
+            "isSelected": false,
             "isOnline": false,
             "like": {
                 "isSelected": true,
@@ -57,18 +57,18 @@ const jsonString = JSON.stringify({
         },
         "watch": {
             "isSelected": false,
-            "value": 0,
+            "value": 300000,
             "like": {
-                "isSelected": false,
-                "value": []
+                "isSelected": true,
+                "value": ["live", "love"]
             },
             "share": {
                 "isSelected": false,
                 "value": 0
             },
             "comment": {
-                "isSelected": false,
-                "value": []
+                "isSelected": true,
+                "value": ["♥️♥️♥️", "❤️❤️❤️"]
             }
         },
         "group": {
@@ -88,7 +88,7 @@ const jsonString = JSON.stringify({
             }
         },
         "page": {
-            "isSelected": false,
+            "isSelected": true,
             "value": 0,
             "like": {
                 "isSelected": false,
@@ -103,9 +103,9 @@ const jsonString = JSON.stringify({
                 "value": []
             },
             "invite": {
-                "isSelected": false,
-                "value": 0,
-                "url": ""
+                "isSelected": true,
+                "value": 3,
+                "url": "https://www.facebook.com/kb.readlestate"
             }
         },
         "marketplace": {
