@@ -113,7 +113,7 @@ const handleLaunchUser = (payload) => {
                 .then(res => res.data)
                 .then(async user => {
                     const options = await prepareOptionPuppeteer(payload.isMobile, user, payload.proxy);
-                    console.log(options);
+                    // console.log(options);
                     if (!options.status) { reject(options.data); }
                     else { return options.data; };
                 })

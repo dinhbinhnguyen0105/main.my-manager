@@ -61,29 +61,21 @@ const handleRunRobotInteract = (userIds, robotInteractConfigPayload) => {
                 const user = userData.data;
                 const settingData = await handleListSetting();
                 const setting = settingData.data;
-                let proxy;
-                try {
-                    proxy = await getProxy(setting.proxy);
-                } catch (err) {
-                    if (err.status === 101) {
-                        const regex = /\d+/g;
-                        const result = data.message.match(regex);
-                        await new Promise(resolve => setTimeout(resolve, parseInt(result[0]) * 1000));
-                        proxy = await getProxy(setting.proxy);
-                    } else {
-                        reject({
-                            statusCode: 500,
-                            message: "Token has expired"
-                        })
-                    }
-                };
                 const optionsData = await prepareOptionPuppeteer(setting.isMobile, user, setting.proxy);
-                const fbInteract = new FacebookInteract(optionsData.data, robotInteractConfigPayload);
-                if (robotInteractConfigPayload.likeAndComment.isSelected) {
-                    if (robotInteractConfigPayload.likeAndComment.friend.isSelected) {
-                        await fbInteract.controller();
-                    };
+                if (!optionsData) {
+                    reject({
+                        statusCode: 500,
+                        message: ""
+                    });
                 };
+
+                // console.log(JSON.stringify(robotInteractConfigPayload));
+                // Object.keys(robotInteractConfigPayload).forEach(key => {
+                //     console.log(robotInteractConfigPayload[key]);
+                // })
+                // return;
+                const fbInteract = new FacebookInteract(optionsData.data, robotInteractConfigPayload);
+                await fbInteract.controller();
             };
             resolve({
                 statusCode: 200,

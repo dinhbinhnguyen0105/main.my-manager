@@ -1,5 +1,4 @@
-// facebookInteract.js
-const path = require("path");
+// FacebookInteract.js
 const FacebookController = require("./Facebook");
 
 class FacebookInteract extends FacebookController {
@@ -7,201 +6,189 @@ class FacebookInteract extends FacebookController {
         super(options);
         this.likeAndComment = interactOptions.likeAndComment;
     };
+
     async controller() {
         await this.initBrowser();
-        if (!await this.checkLogin()) { return false; }
-        if (this.likeAndComment.friend.isSelected) { await this.interactFriend(); };
-        if (this.likeAndComment.newsFeed.isSelected) { await this.interactNewsFeed(); };
-        if (this.likeAndComment.watch.isSelected) { await this.interactWatch(); };
-        if (this.likeAndComment.page.isSelected) { await this.interactPage(); };
+        if (!await this.checkLogin()) {
+            await this.cleanup();
+            return false;
+        }
+        await this.initConstants();
+        if (this.likeAndComment.isSelected) {
+            if (this.likeAndComment.friend.isSelected) { await this.handleFriendInteract(); };
+            if (this.likeAndComment.newsFeed.isSelected) { await this.handleNewsFeedInteract(); };
+            if (this.likeAndComment.watch.isSelected) { await this.handleWatchInteract(); };
+            if (this.likeAndComment.page.isSelected) { await this.handlePageInteract(); };
+        };
+        await this.cleanup();
+        console.log("Finished");
+        return true;
+
     };
 
-    async handlePokes(count) {
-        if (!count) return false;
-        try {
-            await this.delay(1000, 5000);
-            this.SELECTOR.pokes = this.pageLanguage === "vi" ? "div[aria-label='Chọc']" : "div[aria-label='Poke']";
-            this.ARIA_LABEL.pokes = this.pageLanguage === "vi" ? "chọc" : "poke";
+    async handleFriendInteract() {
+        const handlePoke = async (count) => {
+            if (!count) return false;
             try {
-                await this.page.waitForSelector(this.SELECTOR.pokes);
+                await this.delay(1000, 5000);
+                await this.page.waitForSelector(this.SELECTOR.div__button__hashpopup__menu);
+                let isPokeButtonExisted = false;
+
+                for (let i = 0; i < 5; i++) {
+                    const hashpopupButtons = await this.page.$$(this.SELECTOR.div__button__hashpopup__menu);
+                    for (let hashpopupButton of hashpopupButtons) {
+                        const hashpopupButtonName = await hashpopupButton.evaluate(elm => elm.getAttribute("aria-label"));
+                        if (hashpopupButtonName && hashpopupButtonName.trim().toLowerCase() === this.ARIA_LABEL.button__poke) {
+                            isPokeButtonExisted = true;
+                            break;
+                        };
+                    };
+                    if (isPokeButtonExisted) { break; }
+                    else { await new Promise(resolve => setTimeout(resolve, 1000)); };
+                }
+                if (!isPokeButtonExisted) {
+                    console.error("ERROR [handlePoke]: Not found poke button");
+                    return false;
+                };
+
+                for (let i = 0; i < 3; i++) {
+                    const loadingState = await this.page.$(this.SELECTOR.div__loadingState);
+                    if (loadingState) {
+                        await this.scrollToElement(loadingState);
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    };
+                };
+
+                const hashpopupButtons = await this.page.$$(this.SELECTOR.div__button__hashpopup__menu);
+                for (let hashpopupButton of hashpopupButtons) {
+                    const hashpopupButtonName = await hashpopupButton.evaluate(elm => elm.getAttribute("aria-label"));
+                    if (hashpopupButtonName && this.ARIA_LABEL.button__poke === hashpopupButtonName.trim().toLowerCase()) {
+                        if (count) {
+                            if (Math.random() > 0.2) {
+                                await this.delay();
+                                await this.scrollToElement(hashpopupButton);
+                                await this.delay();
+                                await hashpopupButton.click();
+                                count--;
+                            };
+                        }
+                        else { return true; };
+                    };
+                };
             } catch (error) {
                 console.error("ERROR [handlePokes]: ", error);
                 return false;
             };
-            await this.page.waitForSelector(this.SELECTOR.button);
-            let buttons = await this.page.$$(this.SELECTOR.button);
-            let pokeButtons = [];
-            for (let button of buttons) {
-                const isPokeButton = await button.evaluate((elm, ariaLabel) => {
-                    const label = elm.getAttribute("aria-label");
-                    if (label && label.toLowerCase().includes(ariaLabel.toLowerCase())) return true;
-                    return false;
-                }, this.ARIA_LABEL.pokes);
-                if (isPokeButton) pokeButtons.push(button);
-            };
-            let pokeButtonCount = pokeButtons.length;
-            if (pokeButtonCount > 0) {
-                const randomMove = Math.floor(Math.random() * (pokeButtonCount > 5 ? (Math.floor(Math.random() * 5)) : (Math.floor(Math.random() * pokeButtonCount))))
-                for (let i = 0; i < randomMove; i++) {
-                    await this.scrollToElement(pokeButtons[i]);
-                };
-
-                buttons = await this.page.$$(this.SELECTOR.button);
-                pokeButtons = [];
-                for (let button of buttons) {
-                    const isPokeButton = await button.evaluate((elm, ariaLabel) => {
-                        const label = elm.getAttribute("aria-label");
-                        if (label && label.toLowerCase().includes(ariaLabel.toLowerCase())) return true;
-                        return false;
-                    }, this.ARIA_LABEL.pokes);
-                    if (isPokeButton) pokeButtons.push(button);
-                };
-                pokeButtonCount = pokeButtons.length;
-                const newCount = count > pokeButtonCount ? pokeButtonCount : count;
-                for (let i = 0; i < newCount; i++) {
-                    const buttonIndex = Math.floor(Math.random() * pokeButtonCount);
-                    await this.delay(500, 1500);
-                    await this.scrollToElement(pokeButtons[buttonIndex]);
-                    await this.delay(500, 1500);
-                    await pokeButtons[buttonIndex].click();
-                    await this.delay(500, 1500);
-                };
-                return true;
-            };
-            return false;
-        } catch (err) {
-            console.error("ERROR [handlePokes]: ", err);
-            return false;
         };
-    };
-
-    async handleRePokes(count) {
-        if (!count) { return false; };
-        try {
-            await this.delay(1000, 5000);
-            this.SELECTOR.pokes = this.pageLanguage === "vi" ? "div[aria-label='Chọc']" : "div[aria-label='Poke']";
-            this.ARIA_LABEL.pokes = this.pageLanguage === "vi" ? "chọc" : "poke";
-            this.ARIA_LABEL.re_pokes = this.pageLanguage === "vi" ? "chọc lại" : "poke back";
-
+        const handlePokeBack = async (count) => {
+            if (!count) return false;
             try {
-                await this.page.waitForSelector(this.SELECTOR.pokes);
-            } catch (err) {
-                console.error("ERROR [handleRePokes]: ", err);
-            };
-            await this.page.waitForSelector(this.SELECTOR.button);
-            const buttons = await this.page.$$(this.SELECTOR.button);
-            let rePokeButtons = [];
-            for (let button of buttons) {
-                const isPokeButton = await button.evaluate((elm, ariaLabel) => {
-                    const label = elm.getAttribute("aria-label");
-                    const isDisabled = elm.getAttribute("aria-disabled");
-                    if (isDisabled === "true") { return false; };
-                    if (label && label.toLowerCase().includes(ariaLabel.toLowerCase())) return true;
-                    return false;
-                }, this.ARIA_LABEL.re_pokes);
-                if (isPokeButton) rePokeButtons.push(button);
-            };
-            const rePokeButtonCount = rePokeButtons.length;
-            if (rePokeButtonCount > 0) {
-                const randomMove = Math.floor(Math.random() * (rePokeButtonCount > 5 ? (Math.floor(Math.random() * 5)) : (Math.floor(Math.random() * rePokeButtonCount))))
-                for (let i = 0; i < randomMove; i++) { await this.moveToElement(rePokeButtons[i]); };
-                const newCount = count > rePokeButtonCount ? rePokeButtonCount : count;
-                for (let i = 0; i < newCount; i++) {
-                    await this.delay(300, 1000);
-                    const buttonIndex = Math.floor(Math.random() * rePokeButtonCount);
-                    await this.moveToElement(rePokeButtons[buttonIndex]);
-                    await this.delay(300, 1000);
-                    await rePokeButtons[buttonIndex].click();
-                    await this.delay(300, 1000);
-                };
-            };
-            return true;
-        } catch (err) {
-            console.error("ERROR [handleRePokes]: ", err);
-            return false
-        }
-    }
+                await this.delay(1000, 5000);
+                await this.page.waitForSelector(this.SELECTOR.div__button__hashpopup__menu);
+                let isPokeButtonExisted = false;
 
-    async interactFriend() {
+                for (let i = 0; i < 5; i++) {
+                    const hashpopupButtons = await this.page.$$(this.SELECTOR.div__button__hashpopup__menu);
+                    for (let hashpopupButton of hashpopupButtons) {
+                        const hashpopupButtonName = await hashpopupButton.evaluate(elm => elm.getAttribute("aria-label"));
+                        if (hashpopupButtonName && hashpopupButtonName.trim().toLowerCase() === this.ARIA_LABEL.this.ARIA_LABEL.button__pokeBack) {
+                            isPokeButtonExisted = true;
+                            break;
+                        };
+                    };
+                    if (isPokeButtonExisted) { break; }
+                    else { await new Promise(resolve => setTimeout(resolve, 1000)); };
+                }
+                if (!isPokeButtonExisted) {
+                    console.error("ERROR [handlePokeBack]: Not found poke back button");
+                    return false;
+                };
+
+                const hashpopupButtons = await this.page.$$(this.SELECTOR.div__button__hashpopup__menu);
+                for (let hashpopupButton of hashpopupButtons) {
+                    const hashpopupButtonName = await hashpopupButton.evaluate(elm => elm.getAttribute("aria-label"));
+                    if (hashpopupButtonName && this.ARIA_LABEL.this.ARIA_LABEL.button__pokeBack === hashpopupButtonName.trim().toLowerCase()) {
+                        if (count) {
+                            if (Math.random() > 0.2) {
+                                await this.delay();
+                                await this.scrollToElement(hashpopupButton);
+                                await this.delay();
+                                await hashpopupButton.click();
+                                count--;
+                            };
+                        }
+                        else { return true; };
+                    };
+                };
+            } catch (error) {
+                console.error("ERROR [handlePokeBack]: ", error);
+                return false;
+            };
+        };
         const friend = this.likeAndComment.friend;
         try {
             const results = {};
-            await this.page.goto("https://www.facebook.com/?filter=friends&sk=h_chr");
-            const isFeeds = await this.handleFeeds(
+            const isFeeds = await this.interactFeed(
+                "https://www.facebook.com/?filter=friends&sk=h_chr",
                 300000,
                 friend.like.isSelected && friend.like.value,
                 friend.comment.isSelected && friend.comment.value,
-                0
+                0,
             );
             results.isFeeds = isFeeds;
-            if (friend.poke.isSelected) {
+            if (friend.poke.isSelected && friend.poke.value) {
                 await this.page.goto("https://www.facebook.com/pokes");
-                const isPoked = await this.handlePokes(friend.poke.isSelected && friend.poke.value);
-                results.isPoked = isPoked;
-            };
-            if (friend.rePoke.isSelected) {
+                const isPoke = await handlePoke(friend.poke.value);
+                results.isPoke = isPoke;
+            } else if (friend.rePoke.isSelected && friend.rePoke.value) {
                 await this.page.goto("https://www.facebook.com/pokes");
-                const isRePoked = await this.handleRePokes(friend.rePoke.isSelected && friend.rePoke.value);
-                results.isRePoked = isRePoked;
+                const isPokeBack = await handlePokeBack(friend.poke.value);
+                results.isPokeBack = isPokeBack;
             };
-            console.log("Interact friends: ", results);
+            console.log("handleFriendInteract: ", results);
             return true;
         } catch (error) {
             console.error("ERROR [interactFriend]: ", error);
             return false;
         };
     };
-    async interactNewsFeed() {
+    async handleNewsFeedInteract() {
         try {
             const newsFeed = this.likeAndComment.newsFeed;
-            const results = {};
-            await this.page.goto("https://www.facebook.com/?filter=all&sk=h_chr");
-            const isNewsFeed = await this.handleFeeds(
+            const isFeeds = await this.interactFeed(
+                "https://www.facebook.com/?filter=all&sk=h_chr",
                 parseInt(newsFeed.value),
                 newsFeed.like.isSelected && newsFeed.like.value,
                 newsFeed.comment.isSelected && newsFeed.comment.value,
-                newsFeed.share.isSelected && newsFeed.share.value,
+                0,
             );
-            results.newsFeed = isNewsFeed;
-            console.log("Interact newsFeed: ", results);
+            console.log("handleNewsFeedInteract: ", { isFeeds });
             return true;
         } catch (error) {
-            console.error("ERROR [interactNewsFeed]: ", error);
+            console.error("ERROR [handleNewsFeedInteract]: ", error);
             return false;
         };
     };
-    async interactWatch() {
-        const watch = this.likeAndComment.watch;
-
-        this.SELECTOR.watch_feed = "#watch_feed";
-        this.SELECTOR.video_article = "div[data-virtualized]";
-        this.SELECTOR.video = "div[role='presentation']"; //hover
-        this.ARIA_LABEL.video_play = this.pageLanguage === "vi" ? "phát" : "play";
-        this.ARIA_LABEL.video_pause = this.pageLanguage === "vi" ? "tạm dừng" : "pause";
-        this.ARIA_LABEL.button_comment = this.pageLanguage === "vi" ? "viết bình luận" : "Leave a comment";
-        this.ARIA_LABEL.video_viewer = this.pageLanguage === "vi" ? "trình xem video" : "video viewer";
-        this.ARIA_LABEL.submit_comment = this.pageLanguage === "vi" ? "bình luận" : "comment";
-        this.ARIA_LABEL.close_button = this.pageLanguage === "vi" ? "đóng" : "close";
-
+    async handleWatchInteract() {
         const handleWatch = async (article) => {
             try {
                 await this.scrollToElement(article);
                 await this.delay();
-                const video = await article.waitForSelector(this.SELECTOR.video);
+                const video = await article.waitForSelector(this.SELECTOR.div__video);
                 await this.scrollToElement(video);
                 await this.delay();
                 await video.hover();
                 await this.delay();
-                await article.waitForSelector(this.SELECTOR.button);
-                const buttons = await article.$$(this.SELECTOR.button);
+                await article.waitForSelector(this.SELECTOR.div__button);
+                const buttons = await article.$$(this.SELECTOR.div__button);
                 for (let button of buttons) {
-                    const label = await button.evaluate(elm => elm.getAttribute("aria-label"));
-                    if (label && label.trim().toLowerCase() === this.ARIA_LABEL.video_play.trim().toLowerCase()) {
+                    const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
+                    if (buttonName && buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__videoPlay.trim().toLowerCase()) {
                         await this.delay();
                         await button.click();
                         console.log("Watching ...");
                         return true;
-                    } else if (label && label.trim().toLowerCase() === this.ARIA_LABEL.video_pause.trim().toLowerCase()) {
+                    } else if (buttonName && buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__videoPause.trim().toLowerCase()) {
                         console.log("Watching ...");
                         return true;
                     };
@@ -210,62 +197,60 @@ class FacebookInteract extends FacebookController {
             } catch (error) {
                 console.error("ERROR [handleWatch]: ", error);
                 return false;
-            }
+            };
         };
-
-        const handleCommentToWatch = async (comment, count = 0) => {
+        const handleCommentToWatch = async (comment) => {
             try {
-                await this.page.waitForSelector(this.SELECTOR.dialog);
-                const dialogs = await this.page.$$(this.SELECTOR.dialog);
-                for (let dialog of dialogs) {
-                    const label = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
-                    if (label && label.trim().toLowerCase() === this.ARIA_LABEL.video_viewer.trim().toLowerCase()) {
-                        //type
-                        await dialog.waitForSelector(this.SELECTOR.textbox);
-                        const textBox = await dialog.$(this.SELECTOR.textbox);
-                        await this.delay();
-                        await textBox.focus();
-                        await this.delay();
-                        await textBox.type(comment);
-                        // get action buttons
-                        await dialog.waitForSelector(this.SELECTOR.button, { timeout: 60000 });
-                        const buttons = await dialog.$$(this.SELECTOR.button);
-                        const actionButtons = {};
-                        for (let button of buttons) {
-                            const label = await button.evaluate(elm => elm.getAttribute("aria-label"));
-                            const _label = label && label.trim().toLowerCase();
-                            if (_label === this.ARIA_LABEL.close_button.trim().toLowerCase()) { actionButtons.close = button; }
-                            else if (_label === this.ARIA_LABEL.submit_comment.trim().toLowerCase()) { actionButtons.submit = button; }
-                            else { continue; };
+                for (let i = 0; i < 30; i++) {
+                    await this.page.waitForSelector(this.SELECTOR.dialog);
+                    const dialogs = await this.page.$$(this.SELECTOR.dialog);
+                    for (let dialog of dialogs) {
+                        const dialogName = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
+                        if (dialogName && dialogName.trim().toLowerCase() === this.ARIA_LABEL.dialog__name__videoViewer) {
+                            //type
+                            await dialog.waitForSelector(this.SELECTOR.div__textbox);
+                            const textBox = await dialog.$(this.SELECTOR.div__textbox);
+                            await this.delay();
+                            await textBox.focus();
+                            await this.delay();
+                            await textBox.type(comment);
+                            // get action buttons
+                            await dialog.waitForSelector(this.SELECTOR.div__button, { timeout: 60000 });
+                            const buttons = await dialog.$$(this.SELECTOR.div__button);
+                            const actionButtons = {};
+                            for (let button of buttons) {
+                                const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
+                                if (!buttonName) { continue; };
+                                if (buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__close) { actionButtons.close = button; }
+                                else if (buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__submitComment) { actionButtons.submit = button; }
+                                else { continue; };
+                            };
+                            //submit
+                            await this.delay(500, 2000);
+                            await actionButtons.submit.click();
+                            //close
+                            await this.delay(2000, 4000);
+                            await actionButtons.close.click();
+                            return true;
                         };
-                        //submit
-                        await this.delay(500, 2000);
-                        await actionButtons.submit.click();
-                        //close
-                        await this.delay(2000, 4000);
-                        await actionButtons.close.click();
-                        return true;
                     };
-                };
-                if (count > 30) {
-                    console.error("ERROR [handleCommentToWatch]: cannot found dialog");
-                    return false;
-                } else {
                     await new Promise(resolve => setTimeout(resolve, 1000));
-                    return handleCommentToWatch(comment, count + 1);
-                }
+                };
+                console.error("ERROR [handleCommentToWatch]: cannot found dialog");
+                return false;
             } catch (err) {
                 console.error("ERROR [handleCommentToWatch]: ", err);
                 return false;
             };
         };
 
+        const watch = this.likeAndComment.watch;
         try {
             const videoWatchedIndex = [];
             const startTime = Date.now();
             await this.page.goto("https://www.facebook.com/watch/");
-            await this.page.waitForSelector(this.SELECTOR.watch_feed);
-            const watchFeed = await this.page.$(this.SELECTOR.watch_feed);
+            await this.page.waitForSelector(this.SELECTOR.watch__feed__id);
+            const watchFeed = await this.page.$(this.SELECTOR.watch__feed__id);
 
             while (Date.now() - startTime < watch.value) {
                 await watchFeed.waitForSelector(this.SELECTOR.video_article);
@@ -283,12 +268,11 @@ class FacebookInteract extends FacebookController {
                         isLiked && watch.like.value.pop();
                     }
                     if (watch.comment.isSelected && watch.comment.value.length > 0) {
-                        await videoArticles[videoIndex].waitForSelector(this.SELECTOR.button, { timeout: 60000 });
-                        let buttons = await videoArticles[videoIndex].$$(this.SELECTOR.button);
+                        await videoArticles[videoIndex].waitForSelector(this.SELECTOR.div__button, { timeout: 60000 });
+                        let buttons = await videoArticles[videoIndex].$$(this.SELECTOR.div__button);
                         for (let button of buttons) {
-                            const label = await button.evaluate(elm => elm.getAttribute("aria-label"));
-                            const _label = label && label.trim().toLowerCase();
-                            if (_label === this.ARIA_LABEL.button_comment) {
+                            const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
+                            if (buttonName.trim().toLowerCase() === this.ARIA_LABEL.button_comment) {
                                 await this.delay();
                                 await this.scrollToElement(button);
                                 await this.delay();
@@ -298,81 +282,60 @@ class FacebookInteract extends FacebookController {
                                 await new Promise(resolve => setTimeout(resolve, 3000));
                                 if (await this.handleLeavePageDialog()) { console.log("Leaved.") };
                                 isCommented && watch.comment.value.pop();
-                            }
-                        }
-
-                        // if (share.length > 0) {
-                        //     //share
-                        // };
+                            };
+                        };
                     };
                     videoWatchedIndex.push(videoIndex);
                 };
             }
-            console.log("isWatched: ", true);
+            console.log("interactWatch: ", true);
+            return true;
         } catch (error) {
             console.error("ERROR [interactWatch]: ", error);
             return false;
         };
     };
-    async interactGroup() {
+    async handleGroupInteract() {
         try {
             const group = this.likeAndComment.group;
-            const results = {};
-            await this.page.goto("https://www.facebook.com/?filter=groups&sk=h_chr");
-            const isGroup = await this.handleFeeds(
+            const isFeeds = await this.interactFeed(
+                "https://www.facebook.com/?filter=groups&sk=h_chr",
                 parseInt(group.value),
                 group.like.isSelected && group.like.value,
                 group.comment.isSelected && group.comment.value,
-                group.share.isSelected && group.share.value,
+                0,
             );
-            results.group = isGroup;
-            console.log("Interact group: ", results);
+            console.log("handleGroupInteract: ", { isFeeds });
             return true;
         } catch (error) {
-            console.error("ERROR [interactGroup]: ", error);
+            console.error("ERROR [handleGroupInteract]: ", error);
             return false;
         };
     };
-    async interactPage() {
+    async handlePageInteract() {
         try {
             const page = this.likeAndComment.page;
-            const results = {};
-            if (page.isSelected) {
-                await this.page.goto("https://www.facebook.com/?filter=pages&sk=h_chr");
-                const isPage = await this.handleFeeds(
-                    parseInt(page.value),
-                    page.like.isSelected && page.like.value,
-                    page.comment.isSelected && page.comment.value,
-                    page.share.isSelected && page.share.value,
-                );
-                results.page = isPage;
-            }
-
-            //like in page
-            // const main = document.querySelector("div[role='main']");
-            // const articles = main.querySelectorAll('div[aria-labelledby]');
-            // articles[0].querySelectorAll("div[data-ad-preview='message']") => not reel
-
-
-            //invite
-            // aria-label="Mời bạn bè"  ||  aria-label="Invite friends"
-            this.ARIA_LABEL.profile__setting = this.pageLanguage === "vi" ? "xem thêm tùy chọn trong phần cài đặt trang cá nhân" : "profile settings see more options";
-            this.ARIA_LABEL.dialog__invite__friend = this.pageLanguage === "vi" ? "mời bạn bè" : "invite friends";
-            this.TEXTCONTENT.menu__item__inviteFriend = this.pageLanguage === "vi" ? "mời bạn bè" : "invite friends";
-
+            const isFeeds = await this.interactFeed(
+                "https://www.facebook.com/?filter=pages&sk=h_chr",
+                parseInt(page.value),
+                page.like.isSelected && page.like.value,
+                page.comment.isSelected && page.comment.value,
+                0,
+            );
             if (page.invite.isSelected && page.invite.url && page.invite.value) {
                 await this.page.goto(page.invite.url);
                 // hashpopup menu
-                const main = await this.page.waitForSelector(this.SELECTOR.main_container);
-                await main.waitForSelector(this.SELECTOR.div__hashpopup__menu);
-                const hashpopupMenuButtons = await main.$$(this.SELECTOR.div__hashpopup__menu);
+                const main = await this.page.waitForSelector(this.SELECTOR.div__container__main);
+                await main.waitForSelector(this.SELECTOR.div__button__hashpopup__menu);
+                const hashpopupMenuButtons = await main.$$(this.SELECTOR.div__button__hashpopup__menu);
                 for (let hashpopupMenuButton of hashpopupMenuButtons) {
-                    const label = await hashpopupMenuButton.evaluate(elm => elm.getAttribute("aria-label"));
-                    const _label = label && label.trim().toLowerCase();
-                    if (_label === this.ARIA_LABEL.profile__setting.trim().toLowerCase()) {
+                    const buttonName = await hashpopupMenuButton.evaluate(elm => elm.getAttribute("aria-label"));
+                    if (!buttonName) { continue; };
+                    if (buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__profileSetting) {
                         await this.scrollToElement(hashpopupMenuButton);
                         await this.delay();
                         await hashpopupMenuButton.click();
+                        await this.delay();
                         await this.page.waitForSelector(this.SELECTOR.div__popup__menu);
                         const popupMenu = await this.page.$(this.SELECTOR.div__popup__menu);
                         await popupMenu.waitForSelector(this.SELECTOR.div__popup__menu__item);
@@ -381,36 +344,57 @@ class FacebookInteract extends FacebookController {
                             const textContent = await menuItem.evaluate(elm => elm.textContent);
                             if (textContent.trim().toLowerCase().includes(this.TEXTCONTENT.menu__item__inviteFriend)) {
                                 await menuItem.click();
-                                await this.page.waitForSelector(this.SELECTOR.dialog);
+                                await this.delay();
 
-                            }
-                        }
+                                // handle dialog 
+                                await this.page.waitForSelector(this.SELECTOR.div__dialog);
+                                const dialogs = await this.page.$$(this.SELECTOR.div__dialog);
+                                for (let dialog of dialogs) {
+                                    const dialogName = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
+                                    if (!dialogName) { continue; };
+                                    if (dialogName.trim().toLowerCase() === this.ARIA_LABEL.dialog__name__inviteFriend) {
+                                        for (let i = 0; i < 3; i++) {
+                                            try {
+                                                const loading = await dialog.waitForSelector(this.SELECTOR.div__loadingState);
+                                                this.scrollToElement(loading);
+                                                await new Promise(resolve => setTimeout(resolve, 1000));
+                                            } catch (error) { continue; };
+                                        };
+                                        await dialog.waitForSelector(this.SELECTOR.div__checkbox__false);
+                                        const checkboxList = await dialog.$$(this.SELECTOR.div__checkbox__false);
+                                        for (let i = 0; i < page.invite.value; i++) {
+                                            const randomIndex = Math.floor(Math.random() * checkboxList.length);
+                                            await this.delay();
+                                            await this.scrollToElement(checkboxList[randomIndex]);
+                                            await this.delay();
+                                            await checkboxList[randomIndex].click();
+                                            await this.delay();
+                                        };
+                                        await this.delay();
+                                        await dialog.waitForSelector(this.SELECTOR.div__button);
+                                        const buttons = await dialog.$$(this.SELECTOR.div__button);
+                                        for (let button of buttons) {
+                                            const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
+                                            if (!buttonName) { continue; };
+                                            if (buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__invite) {
+                                                await button.click();
+                                                console.log("[handlePageInteract] invited")
+                                                return true;
+                                            };
+                                        };
+                                    };
+                                };
+                            };
+                        };
                     } else { continue; };
                 };
             };
-            // aria-label="Profile settings see more options"
-            // aria-label="Xem thêm tùy chọn trong phần cài đặt trang cá nhân"
-            // aria-haspopup="menu" role="button"   aria-expanded="false"
-            // div[role='menu']
-            // div role='menuitem'
-            // div role='dialog' aria-label='Mời bạn bè'
-            // div role='checkbox' aria-checked='false'
-            // div role='button' aria-label='Gửi lời mời'
-            console.log("Interact page: ", results);
+
             return true;
         } catch (error) {
-            console.error("ERROR [interactPage]: ", error);
+            console.error("ERROR [handlePageInteract]: ", error);
             return false;
         };
-    };
-    async interactMarketplace() {
-
-    };
-    async interactNotification() {
-
-    };
-    async interactSearch() {
-
     };
 }
 

@@ -1,6 +1,8 @@
 // preload.js
 const { contextBridge, ipcRenderer } = require("electron");
 
+
+
 contextBridge.exposeInMainWorld("electronAPIs", {
     listUser: () => ipcRenderer.invoke("/user"),
     getUser: (id) => ipcRenderer.invoke("/user/info", id),

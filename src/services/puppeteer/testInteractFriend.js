@@ -41,26 +41,26 @@ const jsonString = JSON.stringify({
         },
         "newsFeed": {
             "isSelected": false,
-            "value": "",
+            "value": "300000",
             "like": {
-                "isSelected": false,
-                "value": []
+                "isSelected": true,
+                "value": ["like", "like", "love"]
             },
             "share": {
                 "isSelected": false,
                 "value": 0
             },
             "comment": {
-                "isSelected": false,
-                "value": []
+                "isSelected": true,
+                "value": ["♥️♥️♥️", "❤️❤️❤️"]
             }
         },
         "watch": {
             "isSelected": false,
-            "value": 300000,
+            "value": "300000",
             "like": {
                 "isSelected": true,
-                "value": ["live", "love"]
+                "value": ["like", "like", "love"]
             },
             "share": {
                 "isSelected": false,
@@ -73,26 +73,26 @@ const jsonString = JSON.stringify({
         },
         "group": {
             "isSelected": false,
-            "value": 0,
+            "value": "300000",
             "like": {
-                "isSelected": false,
-                "value": []
+                "isSelected": true,
+                "value": ["like", "like", "love"]
             },
             "share": {
                 "isSelected": false,
                 "value": 0
             },
             "comment": {
-                "isSelected": false,
-                "value": []
+                "isSelected": true,
+                "value": ["♥️♥️♥️", "❤️❤️❤️"]
             }
         },
         "page": {
-            "isSelected": true,
-            "value": 0,
+            "isSelected": false,
+            "value": "1",
             "like": {
                 "isSelected": false,
-                "value": []
+                "value": ["like", "like", "love"]
             },
             "share": {
                 "isSelected": false,
@@ -100,7 +100,7 @@ const jsonString = JSON.stringify({
             },
             "comment": {
                 "isSelected": false,
-                "value": []
+                "value": ["♥️♥️♥️", "❤️❤️❤️"]
             },
             "invite": {
                 "isSelected": true,
