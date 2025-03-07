@@ -359,6 +359,7 @@ class FacebookInteract extends FacebookController {
             this.ARIA_LABEL.profile__setting = this.pageLanguage === "vi" ? "xem thêm tùy chọn trong phần cài đặt trang cá nhân" : "profile settings see more options";
             this.ARIA_LABEL.dialog__invite__friend = this.pageLanguage === "vi" ? "mời bạn bè" : "invite friends";
             this.TEXTCONTENT.menu__item__inviteFriend = this.pageLanguage === "vi" ? "mời bạn bè" : "invite friends";
+
             if (page.invite.isSelected && page.invite.url && page.invite.value) {
                 await this.page.goto(page.invite.url);
                 // hashpopup menu
