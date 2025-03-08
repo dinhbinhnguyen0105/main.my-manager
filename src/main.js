@@ -17,8 +17,8 @@ const createMainWindow = () => {
             enableBlinkFeatures: "",
         },
     });
-    // window.loadURL("http://localhost:5173/");
-    window.loadFile(path.resolve(__dirname, "dist", "index.html"));
+    window.loadURL("http://localhost:5173/");
+    // window.loadFile(path.resolve(__dirname, "dist", "index.html"));
 };
 
 app.whenReady().then(() => {
