@@ -4,7 +4,7 @@ const fs = require("fs");
 const initRobotModel = require("../model/robot");
 const { handleGetUser } = require("./user");
 const { handleListSetting } = require("./setting");
-const getProxy = require("../utils/getProxy");
+const convertObj = require("../utils/convertObj");
 const prepareOptionPuppeteer = require("../utils/prepareOptionPuppeteer");
 const FacebookInteract = require("./puppeteer/FacebookInteract");
 
@@ -56,6 +56,7 @@ const handleUpdateRobotInteractConfig = (robotInteractConfigPayload) => {
 const handleRunRobotInteract = (userIds, robotInteractConfigPayload) => {
     return new Promise(async (resolve, reject) => {
         try {
+            convertObj(robotInteractConfigPayload);
             for (let userId of userIds) {
                 const userData = await handleGetUser(userId);
                 const user = userData.data;
@@ -68,12 +69,6 @@ const handleRunRobotInteract = (userIds, robotInteractConfigPayload) => {
                         message: ""
                     });
                 };
-
-                // console.log(JSON.stringify(robotInteractConfigPayload));
-                // Object.keys(robotInteractConfigPayload).forEach(key => {
-                //     console.log(robotInteractConfigPayload[key]);
-                // })
-                // return;
                 const fbInteract = new FacebookInteract(optionsData.data, robotInteractConfigPayload);
                 await fbInteract.controller();
             };

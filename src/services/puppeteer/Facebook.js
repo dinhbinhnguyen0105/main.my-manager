@@ -331,7 +331,6 @@ class Facebook extends Controller {
                 await this.scrollToElement(articles[count]);
                 await this.delay(1000, 3000);
                 if (Math.random() < 0.2) {
-                    console.log("interact")
                     if (reactions.length > 0) {
                         const isLiked = await this.interactReaction(articles[count], reactions[reactions.length - 1]);
                         isLiked && reactions.pop();
