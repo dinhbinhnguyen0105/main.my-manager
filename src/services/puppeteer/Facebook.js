@@ -239,7 +239,7 @@ class Facebook extends Controller {
     async interactReaction(article, reaction) {
         const reactions = ["like", "love", "care", "haha", "wow", "sad", "angry",];
         try {
-            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 60000 });
+            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 30000 });
             const buttons = await article.$$(this.SELECTOR.div__button);
             for (let button of buttons) {
                 const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
@@ -273,7 +273,7 @@ class Facebook extends Controller {
 
     async interactComment(article, comment) {
         try {
-            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 60000 });
+            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 30000 });
             let buttons = await article.$$(this.SELECTOR.div__button);
             for (let button of buttons) {
                 const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
@@ -289,7 +289,7 @@ class Facebook extends Controller {
                     break;
                 }
             };
-            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 60000 });
+            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 30000 });
             buttons = await article.$$(this.SELECTOR.div__button);
             for (let button of buttons) {
                 const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
@@ -331,7 +331,6 @@ class Facebook extends Controller {
                 await this.scrollToElement(articles[count]);
                 await this.delay(1000, 3000);
                 if (Math.random() < 0.2) {
-                    console.log("interact")
                     if (reactions.length > 0) {
                         const isLiked = await this.interactReaction(articles[count], reactions[reactions.length - 1]);
                         isLiked && reactions.pop();
