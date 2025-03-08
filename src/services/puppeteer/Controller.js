@@ -170,7 +170,7 @@ class Controller {
             await this.page.evaluate(el => {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
             }, element);
-            await this.delay(500, 1000); // Wait for the scroll to complete
+            await this.delay(1000, 2000); // Wait for the scroll to complete
             return true;
         } catch (err) {
             console.error("ERROR [scrollToElement]:", err);

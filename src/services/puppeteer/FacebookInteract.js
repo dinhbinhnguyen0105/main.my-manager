@@ -19,9 +19,10 @@ class FacebookInteract extends FacebookController {
             if (this.likeAndComment.newsFeed.isSelected) { await this.handleNewsFeedInteract(); };
             if (this.likeAndComment.watch.isSelected) { await this.handleWatchInteract(); };
             if (this.likeAndComment.page.isSelected) { await this.handlePageInteract(); };
+            if (this.likeAndComment.group.isSelected) { await this.handleGroupInteract() };
+            console.log("Finished controller");
         };
         await this.cleanup();
-        console.log("Finished");
         return true;
 
     };
@@ -126,6 +127,7 @@ class FacebookInteract extends FacebookController {
             };
         };
         const friend = this.likeAndComment.friend;
+        console.log("handleFriendInteract running ...");
         try {
             const results = {};
             const isFeeds = await this.interactFeed(
@@ -154,6 +156,7 @@ class FacebookInteract extends FacebookController {
     };
     async handleNewsFeedInteract() {
         try {
+            console.log("handleNewsFeedInteract running ...");
             const newsFeed = this.likeAndComment.newsFeed;
             const isFeeds = await this.interactFeed(
                 "https://www.facebook.com/?filter=all&sk=h_chr",
@@ -202,8 +205,8 @@ class FacebookInteract extends FacebookController {
         const handleCommentToWatch = async (comment) => {
             try {
                 for (let i = 0; i < 30; i++) {
-                    await this.page.waitForSelector(this.SELECTOR.dialog);
-                    const dialogs = await this.page.$$(this.SELECTOR.dialog);
+                    await this.page.waitForSelector(this.SELECTOR.div__dialog);
+                    const dialogs = await this.page.$$(this.SELECTOR.div__dialog);
                     for (let dialog of dialogs) {
                         const dialogName = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
                         if (dialogName && dialogName.trim().toLowerCase() === this.ARIA_LABEL.dialog__name__videoViewer) {
@@ -244,6 +247,7 @@ class FacebookInteract extends FacebookController {
             };
         };
 
+        console.log("handleWatchInteract running ...");
         const watch = this.likeAndComment.watch;
         try {
             const videoWatchedIndex = [];
@@ -253,8 +257,8 @@ class FacebookInteract extends FacebookController {
             const watchFeed = await this.page.$(this.SELECTOR.watch__feed__id);
 
             while (Date.now() - startTime < watch.value) {
-                await watchFeed.waitForSelector(this.SELECTOR.video_article);
-                const videoArticles = await watchFeed.$$(this.SELECTOR.video_article);
+                await watchFeed.waitForSelector(this.SELECTOR.div__videoArticle);
+                const videoArticles = await watchFeed.$$(this.SELECTOR.div__videoArticle);
                 // 1m-3m
                 const timeWatch = Math.floor(Math.random() * 60000 + 180000);   //delay
                 const videoIndex = Math.floor(Math.random() * (videoArticles.length - 1));
@@ -263,8 +267,9 @@ class FacebookInteract extends FacebookController {
                 if (!isWatching) { return false; };
                 await new Promise(resolve => setTimeout(resolve, timeWatch));
                 if (Math.random() < 0.5) {
+                    // if (true) {
                     if (watch.like.isSelected && watch.like.value.length > 0) {
-                        const isLiked = await this.handleInteractLike(videoArticles[videoIndex], watch.like.value[watch.like.value.length - 1]);
+                        const isLiked = await this.interactReaction(videoArticles[videoIndex], watch.like.value[watch.like.value.length - 1]);
                         isLiked && watch.like.value.pop();
                     }
                     if (watch.comment.isSelected && watch.comment.value.length > 0) {
@@ -272,7 +277,8 @@ class FacebookInteract extends FacebookController {
                         let buttons = await videoArticles[videoIndex].$$(this.SELECTOR.div__button);
                         for (let button of buttons) {
                             const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
-                            if (buttonName.trim().toLowerCase() === this.ARIA_LABEL.button_comment) {
+                            if (!buttonName) { continue; };
+                            if (buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__comment) {
                                 await this.delay();
                                 await this.scrollToElement(button);
                                 await this.delay();
@@ -280,7 +286,7 @@ class FacebookInteract extends FacebookController {
                                 await this.delay(1000, 3000);
                                 const isCommented = await handleCommentToWatch(watch.comment.value[watch.comment.value.length - 1]);
                                 await new Promise(resolve => setTimeout(resolve, 3000));
-                                if (await this.handleLeavePageDialog()) { console.log("Leaved.") };
+                                if (await this.confirmLeavePage()) { console.log("Leaved.") };
                                 isCommented && watch.comment.value.pop();
                             };
                         };
@@ -297,6 +303,7 @@ class FacebookInteract extends FacebookController {
     };
     async handleGroupInteract() {
         try {
+            console.log("handleGroupInteract running ...");
             const group = this.likeAndComment.group;
             const isFeeds = await this.interactFeed(
                 "https://www.facebook.com/?filter=groups&sk=h_chr",
@@ -314,14 +321,17 @@ class FacebookInteract extends FacebookController {
     };
     async handlePageInteract() {
         try {
+            console.log("handlePageInteract running ...");
             const page = this.likeAndComment.page;
-            const isFeeds = await this.interactFeed(
-                "https://www.facebook.com/?filter=pages&sk=h_chr",
-                parseInt(page.value),
-                page.like.isSelected && page.like.value,
-                page.comment.isSelected && page.comment.value,
-                0,
-            );
+            console.log(page);
+            // return;
+            // const isFeeds = await this.interactFeed(
+            //     "https://www.facebook.com/?filter=pages&sk=h_chr",
+            //     180000,
+            //     page.like.isSelected && page.like.value,
+            //     page.comment.isSelected && page.comment.value,
+            //     0,
+            // );
             if (page.invite.isSelected && page.invite.url && page.invite.value) {
                 await this.page.goto(page.invite.url);
                 // hashpopup menu
@@ -355,9 +365,10 @@ class FacebookInteract extends FacebookController {
                                     if (dialogName.trim().toLowerCase() === this.ARIA_LABEL.dialog__name__inviteFriend) {
                                         for (let i = 0; i < 3; i++) {
                                             try {
-                                                const loading = await dialog.waitForSelector(this.SELECTOR.div__loadingState);
-                                                this.scrollToElement(loading);
-                                                await new Promise(resolve => setTimeout(resolve, 1000));
+                                                const loadingState = await dialog.$(this.SELECTOR.div__loadingState);
+                                                if (!loadingState) { break; };
+                                                await this.scrollToElement(loadingState);
+                                                await new Promise(resolve => setTimeout(resolve, 2000));
                                             } catch (error) { continue; };
                                         };
                                         await dialog.waitForSelector(this.SELECTOR.div__checkbox__false);

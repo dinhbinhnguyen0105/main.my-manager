@@ -174,9 +174,9 @@ class Facebook extends Controller {
                 timeTry += 1;
                 await new Promise(resolve => setTimeout(resolve, 1000));
             };
-
+            return false;
         } catch (error) {
-            if (error.name.includes("TimeoutError")) { return true; }
+            if (error.name.includes("TimeoutError")) { return false; }
         }
     };
 
@@ -254,7 +254,7 @@ class Facebook extends Controller {
                         const buttonIndex = reactions.findIndex(r => r.toLowerCase() === reaction.toLowerCase());
                         await reactionsDialog.waitForSelector(this.SELECTOR.div__button);
                         const _buttons = await reactionsDialog.$$(this.SELECTOR.div__button);
-                        if (buttonIndex > 0 && buttonIndex < _buttons.length) {
+                        if (buttonIndex < _buttons.length) {
                             await this.delay(1000, 3000);
                             await _buttons[buttonIndex].click();
                             console.log(`Clicked [${reaction}]`);
@@ -281,7 +281,7 @@ class Facebook extends Controller {
                     await this.scrollToElement(button);
                     await button.click();
                     await this.delay(500, 2000);
-                    await this.closeWhatHappenedDialog();
+                    if (await this.closeWhatHappenedDialog()) { return false; };
                     await article.waitForSelector(this.SELECTOR.div__textbox);
                     const textBox = await article.$(this.SELECTOR.div__textbox);
                     await textBox.focus();
@@ -309,13 +309,6 @@ class Facebook extends Controller {
     };
 
     async interactFeed(url, duration = 300000, reactions, comments, share) {
-        console.log({
-            url,
-            duration,
-            reactions,
-            comments,
-            share
-        });
         await this.page.goto(url);
         await this.page.waitForSelector(this.SELECTOR.div__container__main, { timeout: 60000 });
         const mainContainer = await this.page.$(this.SELECTOR.div__container__main);
@@ -327,7 +320,6 @@ class Facebook extends Controller {
             const articles = await mainContainer.$$(this.SELECTOR.div__feedArticle);
             // if (articles.length > 0) {
             if (count < articles.length) {
-                console.log({ count });
                 await this.scrollToElement(articles[count]);
                 await this.delay(1000, 3000);
                 if (Math.random() < 0.2) {
@@ -344,7 +336,6 @@ class Facebook extends Controller {
                     };
                 };
                 count++;
-                // };
             };
         };
         return true;
