@@ -1,1 +1,108 @@
-{"interact":{"likeAndComment":{"isSelected":true,"friend":{"isSelected":false,"isOnline":false,"like":{"isSelected":true,"value":"[\"like\", \"love\", \"like\"]"},"comment":{"isSelected":true,"value":"[\"♥️♥️♥️\"]"},"poke":{"isSelected":true,"value":0},"rePoke":{"isSelected":true,"value":0}},"newsFeed":{"isSelected":false,"value":"150000","like":{"isSelected":true,"value":"[\"like\", \"love\", \"like\"]"},"share":{"isSelected":false,"value":0},"comment":{"isSelected":true,"value":"[\"♥️♥️♥️\"]"}},"watch":{"isSelected":false,"value":"150000","like":{"isSelected":true,"value":"[\"like\", \"love\", \"like\"]"},"share":{"isSelected":false,"value":0},"comment":{"isSelected":true,"value":"[\"♥️♥️♥️\"]"}},"group":{"isSelected":false,"value":"150000","like":{"isSelected":true,"value":"[\"like\", \"love\", \"like\"]"},"share":{"isSelected":false,"value":0},"comment":{"isSelected":true,"value":"[\"♥️♥️♥️\"]"}},"page":{"isSelected":true,"value":0,"like":{"isSelected":false,"value":"[\"like\", \"love\", \"like\"]"},"share":{"isSelected":false,"value":0},"comment":{"isSelected":false,"value":"[\"♥️♥️♥️\"]"},"invite":{"isSelected":true,"value":"3","url":"https://www.facebook.com/kb.readlestate"}},"marketplace":{"isSelected":false,"value":0},"notification":{"isSelected":false,"value":0},"search":{"isSelected":false,"value":0}}}}
+{
+    "interact": {
+        "likeAndComment": {
+            "isSelected": true,
+            "friend": {
+                "isSelected": false,
+                "isOnline": false,
+                "like": {
+                    "isSelected": true,
+                    "value": "[\"like\", \"love\", \"like\"]"
+                },
+                "comment": {
+                    "isSelected": true,
+                    "value": "[\"♥️♥️♥️\"]"
+                },
+                "poke": {
+                    "isSelected": true,
+                    "value": 0
+                },
+                "rePoke": {
+                    "isSelected": true,
+                    "value": 0
+                }
+            },
+            "newsFeed": {
+                "isSelected": false,
+                "value": "150000",
+                "like": {
+                    "isSelected": true,
+                    "value": "[\"like\", \"love\", \"like\"]"
+                },
+                "share": {
+                    "isSelected": false,
+                    "value": 0
+                },
+                "comment": {
+                    "isSelected": true,
+                    "value": "[\"♥️♥️♥️\"]"
+                }
+            },
+            "watch": {
+                "isSelected": false,
+                "value": "150000",
+                "like": {
+                    "isSelected": true,
+                    "value": "[\"like\", \"love\", \"like\"]"
+                },
+                "share": {
+                    "isSelected": false,
+                    "value": 0
+                },
+                "comment": {
+                    "isSelected": true,
+                    "value": "[\"♥️♥️♥️\"]"
+                }
+            },
+            "group": {
+                "isSelected": false,
+                "value": "150000",
+                "like": {
+                    "isSelected": true,
+                    "value": "[\"like\", \"love\", \"like\"]"
+                },
+                "share": {
+                    "isSelected": false,
+                    "value": 0
+                },
+                "comment": {
+                    "isSelected": true,
+                    "value": "[\"♥️♥️♥️\"]"
+                }
+            },
+            "page": {
+                "isSelected": true,
+                "value": 0,
+                "like": {
+                    "isSelected": false,
+                    "value": "[\"like\", \"love\", \"like\"]"
+                },
+                "share": {
+                    "isSelected": false,
+                    "value": 0
+                },
+                "comment": {
+                    "isSelected": false,
+                    "value": "[\"♥️♥️♥️\"]"
+                },
+                "invite": {
+                    "isSelected": true,
+                    "value": "3",
+                    "url": "https://www.facebook.com/kb.readlestate"
+                }
+            },
+            "marketplace": {
+                "isSelected": false,
+                "value": 0
+            },
+            "notification": {
+                "isSelected": false,
+                "value": 0
+            },
+            "search": {
+                "isSelected": false,
+                "value": 0
+            }
+        }
+    }
+}
