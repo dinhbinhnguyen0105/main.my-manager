@@ -32,11 +32,11 @@ class FacebookInteract extends FacebookController {
             if (!count) return false;
             try {
                 await this.delay(1000, 5000);
-                await this.page.waitForSelector(this.SELECTOR.div__button__hashpopup__menu);
+                await this.page.waitForSelector(this.SELECTOR.button__popup_menu__button);
                 let isPokeButtonExisted = false;
 
                 for (let i = 0; i < 5; i++) {
-                    const hashpopupButtons = await this.page.$$(this.SELECTOR.div__button__hashpopup__menu);
+                    const hashpopupButtons = await this.page.$$(this.SELECTOR.button__popup_menu__button);
                     for (let hashpopupButton of hashpopupButtons) {
                         const hashpopupButtonName = await hashpopupButton.evaluate(elm => elm.getAttribute("aria-label"));
                         if (hashpopupButtonName && hashpopupButtonName.trim().toLowerCase() === this.ARIA_LABEL.button__poke) {
@@ -60,7 +60,7 @@ class FacebookInteract extends FacebookController {
                     };
                 };
 
-                const hashpopupButtons = await this.page.$$(this.SELECTOR.div__button__hashpopup__menu);
+                const hashpopupButtons = await this.page.$$(this.SELECTOR.button__popup_menu__button);
                 for (let hashpopupButton of hashpopupButtons) {
                     const hashpopupButtonName = await hashpopupButton.evaluate(elm => elm.getAttribute("aria-label"));
                     if (hashpopupButtonName && this.ARIA_LABEL.button__poke === hashpopupButtonName.trim().toLowerCase()) {
@@ -85,11 +85,11 @@ class FacebookInteract extends FacebookController {
             if (!count) return false;
             try {
                 await this.delay(1000, 5000);
-                await this.page.waitForSelector(this.SELECTOR.div__button__hashpopup__menu);
+                await this.page.waitForSelector(this.SELECTOR.button__popup_menu__button);
                 let isPokeButtonExisted = false;
 
                 for (let i = 0; i < 5; i++) {
-                    const hashpopupButtons = await this.page.$$(this.SELECTOR.div__button__hashpopup__menu);
+                    const hashpopupButtons = await this.page.$$(this.SELECTOR.button__popup_menu__button);
                     for (let hashpopupButton of hashpopupButtons) {
                         const hashpopupButtonName = await hashpopupButton.evaluate(elm => elm.getAttribute("aria-label"));
                         if (hashpopupButtonName && hashpopupButtonName.trim().toLowerCase() === this.ARIA_LABEL.this.ARIA_LABEL.button__pokeBack) {
@@ -105,7 +105,7 @@ class FacebookInteract extends FacebookController {
                     return false;
                 };
 
-                const hashpopupButtons = await this.page.$$(this.SELECTOR.div__button__hashpopup__menu);
+                const hashpopupButtons = await this.page.$$(this.SELECTOR.button__popup_menu__button);
                 for (let hashpopupButton of hashpopupButtons) {
                     const hashpopupButtonName = await hashpopupButton.evaluate(elm => elm.getAttribute("aria-label"));
                     if (hashpopupButtonName && this.ARIA_LABEL.this.ARIA_LABEL.button__pokeBack === hashpopupButtonName.trim().toLowerCase()) {
@@ -182,8 +182,8 @@ class FacebookInteract extends FacebookController {
                 await this.delay();
                 await video.hover();
                 await this.delay();
-                await article.waitForSelector(this.SELECTOR.div__button);
-                const buttons = await article.$$(this.SELECTOR.div__button);
+                await article.waitForSelector(this.SELECTOR.button);
+                const buttons = await article.$$(this.SELECTOR.button);
                 for (let button of buttons) {
                     const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
                     if (buttonName && buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__videoPlay.trim().toLowerCase()) {
@@ -205,21 +205,21 @@ class FacebookInteract extends FacebookController {
         const handleCommentToWatch = async (comment) => {
             try {
                 for (let i = 0; i < 30; i++) {
-                    await this.page.waitForSelector(this.SELECTOR.div__dialog);
-                    const dialogs = await this.page.$$(this.SELECTOR.div__dialog);
+                    await this.page.waitForSelector(this.SELECTOR.dialog);
+                    const dialogs = await this.page.$$(this.SELECTOR.dialog);
                     for (let dialog of dialogs) {
                         const dialogName = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
                         if (dialogName && dialogName.trim().toLowerCase() === this.ARIA_LABEL.dialog__name__videoViewer) {
                             //type
-                            await dialog.waitForSelector(this.SELECTOR.div__textbox);
-                            const textBox = await dialog.$(this.SELECTOR.div__textbox);
+                            await dialog.waitForSelector(this.SELECTOR.input__textbox);
+                            const textBox = await dialog.$(this.SELECTOR.input__textbox);
                             await this.delay();
                             await textBox.focus();
                             await this.delay();
                             await textBox.type(comment);
                             // get action buttons
-                            await dialog.waitForSelector(this.SELECTOR.div__button, { timeout: 60000 });
-                            const buttons = await dialog.$$(this.SELECTOR.div__button);
+                            await dialog.waitForSelector(this.SELECTOR.button, { timeout: 60000 });
+                            const buttons = await dialog.$$(this.SELECTOR.button);
                             const actionButtons = {};
                             for (let button of buttons) {
                                 const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
@@ -253,12 +253,12 @@ class FacebookInteract extends FacebookController {
             const videoWatchedIndex = [];
             const startTime = Date.now();
             await this.page.goto("https://www.facebook.com/watch/");
-            await this.page.waitForSelector(this.SELECTOR.watch__feed__id);
-            const watchFeed = await this.page.$(this.SELECTOR.watch__feed__id);
+            await this.page.waitForSelector(this.SELECTOR.watch_feed__id);
+            const watchFeed = await this.page.$(this.SELECTOR.watch_feed__id);
 
             while (Date.now() - startTime < watch.value) {
-                await watchFeed.waitForSelector(this.SELECTOR.div__videoArticle);
-                const videoArticles = await watchFeed.$$(this.SELECTOR.div__videoArticle);
+                await watchFeed.waitForSelector(this.SELECTOR.article__video);
+                const videoArticles = await watchFeed.$$(this.SELECTOR.article__video);
                 // 1m-3m
                 const timeWatch = Math.floor(Math.random() * 60000 + 180000);   //delay
                 const videoIndex = Math.floor(Math.random() * (videoArticles.length - 1));
@@ -273,8 +273,8 @@ class FacebookInteract extends FacebookController {
                         isLiked && watch.like.value.pop();
                     }
                     if (watch.comment.isSelected && watch.comment.value.length > 0) {
-                        await videoArticles[videoIndex].waitForSelector(this.SELECTOR.div__button, { timeout: 60000 });
-                        let buttons = await videoArticles[videoIndex].$$(this.SELECTOR.div__button);
+                        await videoArticles[videoIndex].waitForSelector(this.SELECTOR.button, { timeout: 60000 });
+                        let buttons = await videoArticles[videoIndex].$$(this.SELECTOR.button);
                         for (let button of buttons) {
                             const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
                             if (!buttonName) { continue; };
@@ -335,9 +335,9 @@ class FacebookInteract extends FacebookController {
             if (page.invite.isSelected && page.invite.url && page.invite.value) {
                 await this.page.goto(page.invite.url);
                 // hashpopup menu
-                const main = await this.page.waitForSelector(this.SELECTOR.div__container__main);
-                await main.waitForSelector(this.SELECTOR.div__button__hashpopup__menu);
-                const hashpopupMenuButtons = await main.$$(this.SELECTOR.div__button__hashpopup__menu);
+                const main = await this.page.waitForSelector(this.SELECTOR.container__main);
+                await main.waitForSelector(this.SELECTOR.button__popup_menu__button);
+                const hashpopupMenuButtons = await main.$$(this.SELECTOR.button__popup_menu__button);
                 for (let hashpopupMenuButton of hashpopupMenuButtons) {
                     const buttonName = await hashpopupMenuButton.evaluate(elm => elm.getAttribute("aria-label"));
                     if (!buttonName) { continue; };
@@ -357,8 +357,8 @@ class FacebookInteract extends FacebookController {
                                 await this.delay();
 
                                 // handle dialog 
-                                await this.page.waitForSelector(this.SELECTOR.div__dialog);
-                                const dialogs = await this.page.$$(this.SELECTOR.div__dialog);
+                                await this.page.waitForSelector(this.SELECTOR.dialog);
+                                const dialogs = await this.page.$$(this.SELECTOR.dialog);
                                 for (let dialog of dialogs) {
                                     const dialogName = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
                                     if (!dialogName) { continue; };
@@ -382,8 +382,8 @@ class FacebookInteract extends FacebookController {
                                             await this.delay();
                                         };
                                         await this.delay();
-                                        await dialog.waitForSelector(this.SELECTOR.div__button);
-                                        const buttons = await dialog.$$(this.SELECTOR.div__button);
+                                        await dialog.waitForSelector(this.SELECTOR.button);
+                                        const buttons = await dialog.$$(this.SELECTOR.button);
                                         for (let button of buttons) {
                                             const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
                                             if (!buttonName) { continue; };

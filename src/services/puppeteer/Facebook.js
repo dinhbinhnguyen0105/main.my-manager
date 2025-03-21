@@ -33,19 +33,19 @@ class Facebook extends Controller {
         };
 
         this.SELECTOR = {
-            watch__feed__id: "#watch_feed",
+            watch_feed__id: "#watch_feed",
 
-            div__container__main: "div[role='main']",
-            div__dialog: "div[role='dialog']",
-            div__whatHappened: 'div[aria-labelledby][role="dialog"]',
-            div__feedArticle: "div[aria-describedby]",
-            div__videoArticle: "div[data-virtualized]",
+            container__main: "div[role='main']",
+            dialog: "div[role='dialog']",
+            dialog__anonymous: 'div[aria-labelledby][role="dialog"]',
+            article__feed: "div[aria-describedby]",
+            article__video: "div[data-virtualized]",
 
-            div__button: "div[role='button']",
-            div__button__expand: "div[aria-expanded='false'][role='button']",
-            div__button__hashpopup__menu: "div[aria-haspopup='menu'][role='button'][aria-expanded='false']",
-            div__textbox: "div[role='textbox']",
-            div__tablist: 'div[aria-orientation="horizontal"][role="tablist"]',
+            button: "div[role='button']",
+            button__ellipsis: "div[aria-expanded='false'][role='button']",
+            button__popup_menu__button: "div[aria-haspopup='menu'][role='button'][aria-expanded='false']",
+            input__textbox: "div[role='textbox']",
+            popup__tablist: 'div[aria-orientation="horizontal"][role="tablist"]',
             div__popup__menu: "div[role='menu']",
             div__popup__menu__item: "div[role='menuitem']",
             div__video: "div[role='presentation']",
@@ -86,6 +86,7 @@ class Facebook extends Controller {
             return false;
         };
     };
+
     async initConstants() {
         try {
             if (!await this.page.url().includes("facebook")) {
@@ -155,13 +156,14 @@ class Facebook extends Controller {
             return false;
         };
     };
+
     async closeWhatHappenedDialog() {
         try {
             let timeTry = 0;
             while (timeTry < 5) {
-                const whatHappenedDialog = await this.page.$(this.SELECTOR.div__whatHappened);
+                const whatHappenedDialog = await this.page.$(this.SELECTOR.dialog__anonymous);
                 if (whatHappenedDialog) {
-                    const buttons = await whatHappenedDialog.waitForSelector(this.SELECTOR.div__button);
+                    const buttons = await whatHappenedDialog.waitForSelector(this.SELECTOR.button);
                     for (let button of buttons) {
                         const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
                         if (!buttonName) { continue; };
@@ -184,13 +186,13 @@ class Facebook extends Controller {
         try {
             let timeTry = 0;
             while (timeTry < 5) {
-                const dialogs = await this.page.$$(this.SELECTOR.div__dialog);
+                const dialogs = await this.page.$$(this.SELECTOR.dialog);
                 for (let dialog of dialogs) {
                     const dialogName = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
                     if (!dialogName) { continue; };
                     if (dialogName.trim().toLowerCase() === this.ARIA_LABEL.dialog__name__leavePage) {
-                        await dialog.waitForSelector(this.SELECTOR.div__button);
-                        const buttons = await dialog.$$(this.SELECTOR.div__button);
+                        await dialog.waitForSelector(this.SELECTOR.button);
+                        const buttons = await dialog.$$(this.SELECTOR.button);
                         for (let button of buttons) {
                             const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
                             const isDisabled = await button.evaluate(elm => elm.getAttribute("aria-disabled"));
@@ -219,7 +221,7 @@ class Facebook extends Controller {
         try {
             let timeTry = 0;
             while (timeTry < 10) {
-                const dialogs = await this.page.$$(this.SELECTOR.div__dialog);
+                const dialogs = await this.page.$$(this.SELECTOR.dialog);
                 for (let dialog of dialogs) {
                     const dialogName = await dialog.evaluate(elm => elm.getAttribute("aria-label"));
                     if (!dialogName) { continue; };
@@ -239,8 +241,8 @@ class Facebook extends Controller {
     async interactReaction(article, reaction) {
         const reactions = ["like", "love", "care", "haha", "wow", "sad", "angry",];
         try {
-            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 30000 });
-            const buttons = await article.$$(this.SELECTOR.div__button);
+            await article.waitForSelector(this.SELECTOR.button, { timeout: 30000 });
+            const buttons = await article.$$(this.SELECTOR.button);
             for (let button of buttons) {
                 const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
                 if (!buttonName) { continue; };
@@ -252,8 +254,8 @@ class Facebook extends Controller {
                     if (!reactionsDialog) { return false; };
                     if (typeof reaction === "string") {
                         const buttonIndex = reactions.findIndex(r => r.toLowerCase() === reaction.toLowerCase());
-                        await reactionsDialog.waitForSelector(this.SELECTOR.div__button);
-                        const _buttons = await reactionsDialog.$$(this.SELECTOR.div__button);
+                        await reactionsDialog.waitForSelector(this.SELECTOR.button);
+                        const _buttons = await reactionsDialog.$$(this.SELECTOR.button);
                         if (buttonIndex < _buttons.length) {
                             await this.delay(1000, 3000);
                             await _buttons[buttonIndex].click();
@@ -273,8 +275,8 @@ class Facebook extends Controller {
 
     async interactComment(article, comment) {
         try {
-            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 30000 });
-            let buttons = await article.$$(this.SELECTOR.div__button);
+            await article.waitForSelector(this.SELECTOR.button, { timeout: 30000 });
+            let buttons = await article.$$(this.SELECTOR.button);
             for (let button of buttons) {
                 const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
                 if (buttonName && buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__comment) {
@@ -282,15 +284,15 @@ class Facebook extends Controller {
                     await button.click();
                     await this.delay(500, 2000);
                     if (await this.closeWhatHappenedDialog()) { return false; };
-                    await article.waitForSelector(this.SELECTOR.div__textbox);
-                    const textBox = await article.$(this.SELECTOR.div__textbox);
+                    await article.waitForSelector(this.SELECTOR.input__textbox);
+                    const textBox = await article.$(this.SELECTOR.input__textbox);
                     await textBox.focus();
                     await textBox.type(comment);
                     break;
                 }
             };
-            await article.waitForSelector(this.SELECTOR.div__button, { timeout: 30000 });
-            buttons = await article.$$(this.SELECTOR.div__button);
+            await article.waitForSelector(this.SELECTOR.button, { timeout: 30000 });
+            buttons = await article.$$(this.SELECTOR.button);
             for (let button of buttons) {
                 const buttonName = await button.evaluate(elm => elm.getAttribute("aria-label"));
                 if (buttonName && buttonName.trim().toLowerCase() === this.ARIA_LABEL.button__submitComment) {
@@ -310,14 +312,14 @@ class Facebook extends Controller {
 
     async interactFeed(url, duration = 300000, reactions, comments, share) {
         await this.page.goto(url);
-        await this.page.waitForSelector(this.SELECTOR.div__container__main, { timeout: 60000 });
-        const mainContainer = await this.page.$(this.SELECTOR.div__container__main);
+        await this.page.waitForSelector(this.SELECTOR.container__main, { timeout: 60000 });
+        const mainContainer = await this.page.$(this.SELECTOR.container__main);
         if (!mainContainer) { return false; };
         const startTime = Date.now();
         let count = 0;
         while (Date.now() - startTime < duration) {
-            await mainContainer.waitForSelector(this.SELECTOR.div__feedArticle);
-            const articles = await mainContainer.$$(this.SELECTOR.div__feedArticle);
+            await mainContainer.waitForSelector(this.SELECTOR.article__feed);
+            const articles = await mainContainer.$$(this.SELECTOR.article__feed);
             // if (articles.length > 0) {
             if (count < articles.length) {
                 await this.scrollToElement(articles[count]);
